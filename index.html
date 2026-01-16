@@ -12,12 +12,6 @@
 <h1>TippTest</h1>
 <div class="subtitle">Teste deine Schreibgeschwindigkeit & Genauigkeit</div>
 
-<!-- Dark / Light Mode Button -->
-<div class="mode-toggle">
-    <button id="toggleMode">🌙 Dark Mode / Light Mode</button>
-</div>
-
-<!-- Zeit auswählen -->
 <div class="controls">
     <label for="timeSelect">Zeit (Sekunden): </label>
     <select id="timeSelect">
@@ -35,7 +29,6 @@
     <button onclick="startTest()">Start</button>
 </div>
 
-<!-- Textauswahl -->
 <div class="controls">
     <select id="textSelect">
         <option value="random">Zufälliger Text</option>
@@ -52,15 +45,14 @@
     </select>
 </div>
 
-<!-- Eigener Text -->
 <textarea id="customText" placeholder="Hier eigenen Text einfügen" style="display:none; margin-bottom:20px;"></textarea>
 
-<!-- Timer & Textbox -->
 <div class="timer" id="timer">⏱ 60s</div>
+
 <div class="text-box" id="text"></div>
+
 <textarea id="input" placeholder="Hier tippen..." disabled></textarea>
 
-<!-- Ergebnisse -->
 <div class="results" id="results">
     <div class="result">
         <strong>WPM</strong>
@@ -80,23 +72,13 @@
     </div>
 </div>
 
-<!-- Footer -->
 <footer>
-    <a href="impressum.html">Impressum</a> |
-    <a href="datenschutz.html">Datenschutz</a>
-    <br>© 2026 Marlon Hans
+<a href="impressum.html">Impressum</a> |
+<a href="datenschutz.html">Datenschutz</a>
+<br>© 2026 DEIN NAME
 </footer>
 
-<!-- JS -->
 <script src="script.js"></script>
-<script>
-// Dark / Light Mode Button
-const toggleBtn = document.getElementById("toggleMode");
-toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-});
-</script>
-
 </div>
 </body>
 </html>
