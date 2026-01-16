@@ -1,81 +1,176 @@
-{
-box-sizing: border-box;
-font-family: "Segoe UI", Arial, sans-serif;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-gradient: linear-gradient(135deg, #020617, #0f172a);
+    --card-bg: #020617;
+    --border: #1e293b;
+    --text-main: #e5e7eb;
+    --text-muted: #94a3b8;
+    --success: #22c55e;
+    --error: #ef4444;
+    --radius: 16px;
 }
 
 body {
-margin: 0;
-height: 100vh;
-background: #0b0f14;
-color: #e6e6e6;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#app {
-display: flex;
-flex-direction: column;
-height: 100vh;
+.app {
+    width: 100%;
+    max-width: 900px;
+    background: var(--card-bg);
+    padding: 32px;
+    border-radius: var(--radius);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
 }
 
-/* HEADER */
-#header {
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 12px 20px;
-background: #111820;
-border-bottom: 1px solid #1f2a36;
+h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 8px;
 }
 
-.title {
-letter-spacing: 2px;
-font-size: 16px;
-font-weight: bold;
+.subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 32px;
 }
 
-/* CONSOLE */
-#console {
-flex: 1;
-padding: 20px;
-overflow-y: auto;
-background: radial-gradient(circle at center, #0f1620 0%, #0b0f14 70%);
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
 }
 
-.message {
-margin-bottom: 14px;
-line-height: 1.5;
-word-wrap: break-word;
+select,
+button {
+    font-size: 1rem;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #020617;
+    color: var(--text-main);
 }
 
-.dispatcher {
-color: #6bbcff;
+button {
+    background: var(--primary);
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-.caller {
-color: #ffb86b;
-font-weight: bold;
+button:hover {
+    background: var(--primary-hover);
 }
 
-/* INPUT */
-#inputArea {
-padding: 10px;
-background: #111820;
-border-top: 1px solid #1f2a36;
+.timer {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
 }
 
-#userInput {
-width: 100%;
-padding: 12px;
-font-size: 14px;
-background: #0b0f14;
-border: 1px solid #1f2a36;
-color: #e6e6e6;
+.text-box {
+    background: #020617;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    user-select: none;
+    min-height: 120px;
 }
 
-#userInput::placeholder {
-color: #777;
+.text-box span.correct {
+    color: var(--success);
 }
 
-#userInput:focus {
-outline: none;
-border-color: #6bbcff;
+.text-box span.incorrect {
+    color: var(--error);
+    text-decoration: underline;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    font-size: 1.1rem;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #020617;
+    color: var(--text-main);
+    resize: none;
+}
+
+textarea:disabled {
+    opacity: 0.6;
+}
+
+.results {
+    margin-top: 24px;
+    display: none;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.result {
+    background: #020617;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.result strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+}
+
+footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin: 0 6px;
+}
+
+footer a:hover {
+    color: var(--text-main);
+}
+
+@media (max-width: 600px) {
+    .app {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .text-box,
+    textarea {
+        font-size: 1rem;
+    }
 }
