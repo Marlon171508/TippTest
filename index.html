@@ -1,189 +1,205 @@
-<style>
+FILE: index.html
+
+<!DOCTYPE html> <html lang="de"> <head> <meta charset="UTF-8"> <title>Notruf-Leitstellen-Simulation</title> <link rel="stylesheet" href="style.css"> </head> <body> <div id="app"> <div id="header"> <span>NOTRUF LEITSTELLE</span> <span id="timer">--:--</span> </div> <div id="console"></div> <div id="inputArea"> <input type="text" id="userInput" placeholder="Frage eingeben und Enter drücken…" autocomplete="off"> </div> </div> <script src="script.js"></script> </body> </html>
+
+FILE: style.css
+
+{
+box-sizing: border-box;
+font-family: "Segoe UI", Arial, sans-serif;
+}
 
 body {
-
-background-color: #2c2c2c;
-
-color: white;
-
-font-family: Arial, sans-serif;
-
-display: flex;
-
-justify-content: center;
-
-align-items: center;
-
-height: 100vh;
-
 margin: 0;
-
+background: #0b0f14;
+color: #e6e6e6;
+height: 100vh;
 }
 
-.container {
-
-width: 80%;
-
-max-width: 800px;
-
-margin: auto;
-
-text-align: center;
-
-box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-
+#app {
+display: flex;
+flex-direction: column;
+height: 100vh;
 }
 
-.console {
+#header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 12px 20px;
+background: #111820;
+border-bottom: 1px solid #1f2a36;
+letter-spacing: 2px;
+font-size: 14px;
+}
 
-background-color: #1c1c1c;
+#timer {
+color: #ff4d4d;
+font-weight: bold;
+}
 
-height: 300px;
-
+#console {
+flex: 1;
+padding: 20px;
 overflow-y: auto;
+background: radial-gradient(circle at center, #0f1620 0%, #0b0f14 70%);
+}
 
+.message {
+margin-bottom: 14px;
+line-height: 1.4;
+}
+
+.dispatcher {
+color: #6bbcff;
+}
+
+.caller {
+color: #ffb86b;
+}
+
+#inputArea {
+border-top: 1px solid #1f2a36;
 padding: 10px;
-
-border-radius: 5px;
-
-margin-bottom: 10px;
-
-white-space: pre-wrap;
-
-text-align: left;
-
+background: #111820;
 }
 
-input {
-
-width: 70%;
-
-padding: 10px;
-
-border: none;
-
-border-radius: 5px;
-
+#userInput {
+width: 100%;
+padding: 12px;
+background: #0b0f14;
+border: 1px solid #1f2a36;
+color: #e6e6e6;
+font-size: 14px;
 }
 
-button {
-
-padding: 10px 15px;
-
-border: none;
-
-border-radius: 5px;
-
-background-color: #007bff;
-
-color: white;
-
-cursor: pointer;
-
+#userInput:focus {
+outline: none;
+border-color: #6bbcff;
 }
 
-</style>
+FILE: script.js
+const consoleEl = document.getElementById("console");
+const inputEl = document.getElementById("userInput");
+const timerEl = document.getElementById("timer");
 
-<script>
+let questionCount = 0;
+let incident = null;
+let countdown = null;
+let remainingSeconds = 0;
 
-const consoleDiv = document.getElementById('console');
+const incidents = [
+{
+name: "Wohnungsbrand",
+intro: "Hallo?! Bitte helfen Sie mir! Es brennt in meiner Wohnung, überall Rauch!",
+reactions: {
+ort: "Ich bin zu Hause, dritte Etage, ich weiß nicht wie lange ich das noch aushalte!",
+verletzt: "Ich huste total und meine Augen brennen, ich habe Angst!",
+allein: "Nein! Meine Katze ist noch hier drin!"
+}
+},
+{
+name: "Herzinfarkt",
+intro: "Mir geht es ganz schlecht… meine Brust tut furchtbar weh!",
+reactions: {
+ort: "Ich bin in meiner Wohnung… ich liege auf dem Boden!",
+schmerz: "Ja! Es zieht bis in den linken Arm, mir ist übel!",
+allein: "Meine Frau ist nicht da, ich bin allein!"
+}
+},
+{
+name: "Verkehrsunfall",
+intro: "Ich hatte einen Unfall! Alles ist passiert so schnell!",
+reactions: {
+ort: "Auf einer Landstraße, ich sehe ein Schild, irgendwas mit B17!",
+verletzt: "Mein Bein tut höllisch weh, ich glaube es ist gebrochen!",
+allein: "Da sind andere Leute, aber die wissen auch nicht was sie tun!"
+}
+},
+{
+name: "Bewusstlose Person",
+intro: "Da liegt jemand auf dem Boden und bewegt sich nicht!",
+reactions: {
+ort: "Im Park, beim Spielplatz!",
+atmet: "Ich glaube ja… aber ganz flach!",
+allein: "Ich bin allein mit der Person, bitte sagen Sie mir was ich tun soll!"
+}
+}
+];
 
-const userInput = document.getElementById('userInput');
-
-const sendButton = document.getElementById('sendButton');
-
-let emergencyTopics = ["Herzinfarkt", "Wohnungsbrand", "Verkehrsunfall", "bewusstlose Person"];
-
-let countdown;
-
-function randomEmergency() {
-
-return emergencyTopics[Math.floor(Math.random() * emergencyTopics.length)];
-
+function addMessage(text, type) {
+const div = document.createElement("div");
+div.className = "message " + type;
+div.textContent = text;
+consoleEl.appendChild(div);
+consoleEl.scrollTop = consoleEl.scrollHeight;
 }
 
-function addMessage(message, type) {
-
-const msg = document.createElement('div');
-
-msg.textContent = message;
-
-msg.className = type;
-
-consoleDiv.appendChild(msg);
-
-consoleDiv.scrollTop = consoleDiv.scrollHeight;
-
+function startIncident() {
+incident = incidents[Math.floor(Math.random() * incidents.length)];
+addMessage(incident.intro, "caller");
+startTimer(180);
 }
 
-function handleUserInput() {
-
-const userText = userInput.value;
-
-addMessage(`Disponent: ${userText}`, 'disponent');
-
-userInput.value = '';
-
-
-if (userText) {
-
-if (Math.random() < 0.5) {
-
-addMessage(`Anrufer: Ich bin so gestresst! ${randomEmergency()} passiert!`, 'anrufer');
-
-startCountdown();
-
-} else {
-
-addMessage(`Anrufer: Das ist doch nicht wichtig, mein Haus brennt!`, 'anrufer');
-
-startCountdown();
-
-}
-
-}
-
-}
-
-function startCountdown() {
-
-clearInterval(countdown);
-
-let timeLeft = 60;
-
-const timer = document.createElement('div');
-
-timer.id = 'timer';
-
-consoleDiv.appendChild(timer);
-
-
+function startTimer(seconds) {
+remainingSeconds = seconds;
+updateTimer();
 countdown = setInterval(() => {
-
-timeLeft--;
-
-timer.textContent = `Zeit bis zur Hilfe: ${timeLeft} Sekunden`;
-
-if (timeLeft <= 0) {
-
+remainingSeconds--;
+updateTimer();
+if (remainingSeconds <= 0) {
 clearInterval(countdown);
-
-addMessage("Einsatzberichte: Die Hilfe ist angekommen.", 'info');
-
-timer.remove();
-
+addMessage("Bitte… sind Sie noch da?!", "caller");
 }
-
 }, 1000);
-
 }
 
-sendButton.addEventListener('click', handleUserInput);
+function updateTimer() {
+const m = String(Math.floor(remainingSeconds / 60)).padStart(2, "0");
+const s = String(remainingSeconds % 60).padStart(2, "0");
+timerEl.textContent = m + ":" + s;
+}
 
-userInput.addEventListener('keypress', (e) => {
+function callerResponse(question) {
+const q = question.toLowerCase();
 
-if (e.key === 'Enter') handleUserInput();
+for (let key in incident.reactions) {
+if (q.includes(key)) {
+return incident.reactions[key];
+}
+}
 
+if (q.includes("mutter") || q.includes("groß") || q.includes("egal")) {
+return "Was?! Das ist doch völlig egal! Es geht hier um einen Notfall!";
+}
+
+if (q.includes("ruhe") || q.includes("beruhigen")) {
+return "Ich versuche ja ruhig zu bleiben, aber das ist total schwer!";
+}
+
+return "Ich weiß es nicht genau! Bitte helfen Sie mir einfach!";
+}
+
+inputEl.addEventListener("keydown", e => {
+if (e.key === "Enter" && inputEl.value.trim() !== "") {
+const text = inputEl.value;
+inputEl.value = "";
+addMessage("Disponent: " + text, "dispatcher");
+questionCount++;
+
+if (!incident && questionCount >= 2) {
+  startIncident();
+  return;
+}
+
+if (incident) {
+  setTimeout(() => {
+    addMessage(callerResponse(text), "caller");
+  }, 600);
+}
+
+
+}
 });
 
-</script>
+addMessage("System: Verbindung hergestellt. Warten auf Notruf…", "dispatcher");
