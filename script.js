@@ -1,10 +1,5 @@
 "use strict";
 
-/* ============================
-   TippTest – script.js
-   ============================ */
-
-/* -------- Texte -------- */
 const TEXTS = [
     "Programmieren macht Spaß und erfordert Konzentration und Übung.",
     "Die Schreibgeschwindigkeit verbessert sich mit regelmäßigem Training.",
@@ -13,27 +8,22 @@ const TEXTS = [
     "Ein gutes Benutzererlebnis beginnt mit durchdachtem Design."
 ];
 
-/* -------- DOM -------- */
 const textEl = document.getElementById("text");
 const inputEl = document.getElementById("input");
 const timerEl = document.getElementById("timer");
 const resultsEl = document.getElementById("results");
 const timeSelectEl = document.getElementById("timeSelect");
 
-/* -------- State -------- */
 let timer = null;
 let timeLeft = 0;
-let testRunning = false;
+let running = false;
 let currentText = "";
 
-/* ============================
-   Test starten
-   ============================ */
 function startTest() {
     clearInterval(timer);
 
     timeLeft = parseInt(timeSelectEl.value, 10);
-    testRunning = true;
+    running = true;
 
     inputEl.value = "";
     inputEl.disabled = false;
@@ -42,14 +32,11 @@ function startTest() {
     resultsEl.style.display = "none";
     timerEl.textContent = `⏱ ${timeLeft}s`;
 
-    loadRandomText();
+    loadText();
     timer = setInterval(updateTimer, 1000);
 }
 
-/* ============================
-   Zufälligen Text laden
-   ============================ */
-function loadRandomText() {
+function loadText() {
     currentText = TEXTS[Math.floor(Math.random() * TEXTS.length)];
     textEl.innerHTML = "";
 
@@ -60,55 +47,40 @@ function loadRandomText() {
     });
 }
 
-/* ============================
-   Timer
-   ============================ */
 function updateTimer() {
     if (timeLeft <= 0) {
-        finishTest();
+        endTest();
         return;
     }
-
     timeLeft--;
     timerEl.textContent = `⏱ ${timeLeft}s`;
 }
 
-/* ============================
-   Eingabe prüfen
-   ============================ */
 inputEl.addEventListener("input", () => {
-    if (!testRunning) return;
+    if (!running) return;
 
-    const inputChars = inputEl.value.split("");
-    const textChars = textEl.querySelectorAll("span");
+    const input = inputEl.value.split("");
+    const chars = textEl.querySelectorAll("span");
 
-    let errors = 0;
-
-    textChars.forEach((charSpan, index) => {
-        const typedChar = inputChars[index];
-
-        if (typedChar === undefined) {
-            charSpan.className = "";
-        } else if (typedChar === charSpan.textContent) {
-            charSpan.className = "correct";
+    chars.forEach((span, i) => {
+        if (input[i] === undefined) {
+            span.className = "";
+        } else if (input[i] === span.textContent) {
+            span.className = "correct";
         } else {
-            charSpan.className = "incorrect";
-            errors++;
+            span.className = "incorrect";
         }
     });
 });
 
-/* ============================
-   Test beenden & auswerten
-   ============================ */
-function finishTest() {
+function endTest() {
     clearInterval(timer);
-    testRunning = false;
+    running = false;
     inputEl.disabled = true;
 
-    const typedText = inputEl.value.trim();
-    const charCount = typedText.length;
-    const wordCount = typedText ? typedText.split(/\s+/).length : 0;
+    const typed = inputEl.value.trim();
+    const charCount = typed.length;
+    const wordCount = typed ? typed.split(/\s+/).length : 0;
     const errorCount = textEl.querySelectorAll(".incorrect").length;
 
     const duration = parseInt(timeSelectEl.value, 10);
@@ -117,22 +89,12 @@ function finishTest() {
         ? Math.max(0, ((charCount - errorCount) / charCount) * 100)
         : 0;
 
-    updateResults(wpm, charCount, errorCount, accuracy);
-}
-
-/* ============================
-   Ergebnisse anzeigen
-   ============================ */
-function updateResults(wpm, chars, errors, accuracy) {
     document.getElementById("wpm").textContent = wpm;
-    document.getElementById("chars").textContent = chars;
-    document.getElementById("errors").textContent = errors;
+    document.getElementById("chars").textContent = charCount;
+    document.getElementById("errors").textContent = errorCount;
     document.getElementById("accuracy").textContent = accuracy.toFixed(1) + "%";
 
     resultsEl.style.display = "grid";
 }
 
-/* ============================
-   Global verfügbar machen
-   ============================ */
 window.startTest = startTest;
