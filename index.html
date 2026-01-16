@@ -1,823 +1,189 @@
-<div class="console-container" id="consoleContainer">
-    <div class="console-log" id="consoleLog">
-        <div class="welcome-screen" id="welcomeScreen">
-            <h2>Notruf-Training Simulation</h2>
-            <p>
-                Willkommen, Disponent. Sie werden einen eingehenden Notruf erhalten.
-                <br><br>
-                Stellen Sie dem Anrufer Fragen, um wichtige Informationen zu sammeln.
-                Geben Sie Ihre Antworten ein und drücken Sie Enter.
-                <br><br>
-                Der Anrufer reagiert auf <strong>alles</strong>, was Sie schreiben – 
-                auch auf unsinnige Fragen. Er bleibt jedoch immer im Notfall-Kontext.
-                <br><br>
-                Drücken Sie <strong>Anruf starten</strong>, um zu beginnen.
-            </p>
-        </div>
-    </div>
-</div>
+<style>
 
-<div class="input-container">
-    <span class="input-prompt">&gt;&gt;&gt;</span>
-    <input type="text" id="userInput" placeholder="Ihre Frage oder Anweisung..." disabled>
-    <button id="startBtn">Anruf starten</button>
-</div>
-
-<script src="script.js"></script>
-
-</body>
-
-</html>
-
-[CSS]
-
-{
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
 body {
-font-family: Consolas, Monaco, Courier New, monospace;
-background-color: #0d1117;
-color: #c9d1d9;
+
+background-color: #2c2c2c;
+
+color: white;
+
+font-family: Arial, sans-serif;
+
+display: flex;
+
+justify-content: center;
+
+align-items: center;
+
 height: 100vh;
-display: flex;
-flex-direction: column;
+
+margin: 0;
+
 }
 
-.header {
-background-color: #161b22;
-border-bottom: 1px solid #30363d;
-padding: 15px 20px;
-display: flex;
-align-items: center;
-gap: 15px;
+.container {
+
+width: 80%;
+
+max-width: 800px;
+
+margin: auto;
+
+text-align: center;
+
+box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+
 }
 
-.header h1 {
-font-size: 16px;
-font-weight: 600;
-color: #ff6b6b;
-}
+.console {
 
-.status-indicator {
-display: flex;
-align-items: center;
-gap: 8px;
-margin-left: auto;
-font-size: 13px;
-}
+background-color: #1c1c1c;
 
-.status-dot {
-width: 10px;
-height: 10px;
-border-radius: 50%;
-background-color: #238636;
-animation: pulse 2s infinite;
-}
+height: 300px;
 
-.status-dot.active {
-background-color: #f85149;
-animation: activePulse 0.8s infinite;
-}
-
-@keyframes pulse {
-0%, 100% { opacity: 1; }
-50% { opacity: 0.5; }
-}
-
-@keyframes activePulse {
-0%, 100% { opacity: 1; box-shadow: 0 0 10px #f85149; }
-50% { opacity: 0.7; box-shadow: 0 0 20px #f85149; }
-}
-
-.console-container {
-flex: 1;
 overflow-y: auto;
-padding: 20px;
-background-color: #0d1117;
+
+padding: 10px;
+
+border-radius: 5px;
+
+margin-bottom: 10px;
+
+white-space: pre-wrap;
+
+text-align: left;
+
 }
 
-.console-log {
-display: flex;
-flex-direction: column;
-gap: 10px;
-}
+input {
 
-.log-entry {
-line-height: 1.7;
-font-size: 14px;
-padding: 4px 0;
-}
+width: 70%;
 
-.log-entry.system {
-color: #8b949e;
-font-style: italic;
-}
+padding: 10px;
 
-.log-entry.dispatcher {
-color: #58a6ff;
-}
-
-.log-entry.dispatcher::before {
-content: "DISPONENT: ";
-color: #388bfd;
-font-weight: bold;
-}
-
-.log-entry.anrufer {
-color: #7ee787;
-background-color: rgba(46, 160, 67, 0.1);
-padding: 8px 12px;
-border-radius: 6px;
-border-left: 3px solid #238636;
-}
-
-.log-entry.anrufer::before {
-content: "ANRUFER: ";
-color: #56d364;
-font-weight: bold;
-}
-
-.log-entry.user {
-color: #d2a8ff;
-}
-
-.log-entry.user::before {
-content: "SIE: ";
-color: #bc8cff;
-font-weight: bold;
-}
-
-.log-entry.alert {
-color: #f85149;
-font-weight: bold;
-background-color: #490202;
-padding: 12px 15px;
-border-radius: 6px;
-border-left: 4px solid #f85149;
-animation: alertFlash 1s ease-in-out;
-}
-
-@keyframes alertFlash {
-0%, 100% { background-color: #490202; }
-50% { background-color: #6e1a1a; }
-}
-
-.log-entry.incident {
-background-color: #161b22;
-border: 2px solid #f0883e;
-border-radius: 8px;
-padding: 20px;
-margin: 15px 0;
-}
-
-.incident-title {
-color: #f0883e;
-font-size: 20px;
-font-weight: bold;
-margin-bottom: 15px;
-text-transform: uppercase;
-}
-
-.incident-details {
-color: #c9d1d9;
-line-height: 2;
-}
-
-.incident-details strong {
-color: #8b949e;
-}
-
-.timer-display {
-background: linear-gradient(135deg, #6e1a1a, #3d0a0a);
-border: 2px solid #f85149;
-border-radius: 10px;
-padding: 25px;
-text-align: center;
-margin: 20px 0;
-animation: timerPulse 1s infinite;
-}
-
-@keyframes timerPulse {
-0%, 100% { box-shadow: 0 0 20px rgba(248, 81, 73, 0.3); }
-50% { box-shadow: 0 0 40px rgba(248, 81, 73, 0.6); }
-}
-
-.timer-label {
-color: #f85149;
-font-size: 12px;
-text-transform: uppercase;
-letter-spacing: 3px;
-margin-bottom: 8px;
-}
-
-.timer-value {
-color: #ff7b72;
-font-size: 56px;
-font-weight: bold;
-font-family: Consolas, monospace;
-}
-
-.timer-value.critical {
-color: #ff4444;
-animation: criticalBlink 0.5s infinite;
-}
-
-@keyframes criticalBlink {
-0%, 100% { opacity: 1; }
-50% { opacity: 0.5; }
-}
-
-.input-container {
-background-color: #161b22;
-border-top: 1px solid #30363d;
-padding: 15px 20px;
-display: flex;
-gap: 12px;
-align-items: center;
-}
-
-.input-prompt {
-color: #7ee787;
-font-size: 14px;
-font-weight: bold;
-}
-
-#userInput {
-flex: 1;
-background-color: #0d1117;
-border: 1px solid #30363d;
-border-radius: 6px;
-color: #c9d1d9;
-font-family: inherit;
-font-size: 14px;
-padding: 12px 15px;
-outline: none;
-transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-#userInput:focus {
-border-color: #58a6ff;
-box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
-}
-
-#userInput:disabled {
-opacity: 0.5;
-cursor: not-allowed;
-}
-
-#startBtn {
-background-color: #238636;
-color: #ffffff;
 border: none;
-border-radius: 6px;
-padding: 12px 24px;
-font-family: inherit;
-font-size: 14px;
-font-weight: 600;
+
+border-radius: 5px;
+
+}
+
+button {
+
+padding: 10px 15px;
+
+border: none;
+
+border-radius: 5px;
+
+background-color: #007bff;
+
+color: white;
+
 cursor: pointer;
-transition: background-color 0.2s, transform 0.1s;
-}
-
-#startBtn:hover {
-background-color: #2ea043;
-transform: scale(1.02);
-}
-
-#startBtn:active {
-transform: scale(0.98);
-}
-
-#startBtn:disabled {
-background-color: #21262d;
-color: #484f58;
-cursor: not-allowed;
-transform: none;
-}
-
-.typing-indicator {
-display: inline-flex;
-gap: 5px;
-padding: 10px 0;
-align-items: center;
-}
-
-.typing-indicator::before {
-content: "Anrufer tippt";
-color: #8b949e;
-font-size: 12px;
-margin-right: 8px;
-}
-
-.typing-dot {
-width: 8px;
-height: 8px;
-background-color: #7ee787;
-border-radius: 50%;
-animation: typing 1.4s infinite;
-}
-
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes typing {
-0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-30% { transform: translateY(-8px); opacity: 1; }
-}
-
-.welcome-screen {
-text-align: center;
-padding: 50px 20px;
-}
-
-.welcome-screen h2 {
-color: #58a6ff;
-font-size: 26px;
-margin-bottom: 20px;
-}
-
-.welcome-screen p {
-color: #8b949e;
-font-size: 14px;
-line-height: 2;
-max-width: 550px;
-margin: 0 auto;
-}
-
-.welcome-screen strong {
-color: #c9d1d9;
-}
-
-[JS]
-
-var consoleLog = document.getElementById('consoleLog');
-var consoleContainer = document.getElementById('consoleContainer');
-var userInput = document.getElementById('userInput');
-var startBtn = document.getElementById('startBtn');
-var statusDot = document.getElementById('statusDot');
-var statusText = document.getElementById('statusText');
-var welcomeScreen = document.getElementById('welcomeScreen');
-
-var questionCount = 0;
-var maxQuestions = 6;
-var callerInfo = {};
-var timerInterval = null;
-var currentIncident = null;
-
-var incidents = [
-{
-type: "WOHNUNGSBRAND",
-icon: "🔥",
-initialPanic: "Es brennt! Oh Gott, es brennt! Überall ist Rauch!",
-details: "Feuer im Mehrfamilienhaus, 3. Stock. Starke Rauchentwicklung. Personen möglicherweise eingeschlossen.",
-units: "2x Löschzug + Drehleiter + RTW",
-priority: "PRIORITÄT 1 - SOFORT",
-emotionalState: "panisch",
-location: "Musterstraße 47, 3. OG links"
-},
-{
-type: "HERZINFARKT",
-icon: "💔",
-initialPanic: "Mein Mann! Er fasst sich an die Brust und kann nicht mehr atmen!",
-details: "Männlich, ca. 65 Jahre, akute Brustschmerzen, Atemnot, kalter Schweiß.",
-units: "RTW + NEF",
-priority: "PRIORITÄT 1 - SOFORT",
-emotionalState: "verzweifelt",
-location: "Lindenweg 12, Einfamilienhaus"
-},
-{
-type: "VERKEHRSUNFALL",
-icon: "🚗",
-initialPanic: "Ein schlimmer Unfall! Die Autos sind total zerstört! Jemand ist eingeklemmt!",
-details: "Frontalzusammenstoß zweier PKW. Mind. 2 Verletzte, 1 Person eingeklemmt.",
-units: "RTW + NEF + Feuerwehr (Rüstzug) + Polizei",
-priority: "PRIORITÄT 1 - SOFORT",
-emotionalState: "schockiert",
-location: "B27, Höhe Kilometer 34, Richtung Norden"
-},
-{
-type: "BEWUSSTLOSE PERSON",
-icon: "🫀",
-initialPanic: "Hier liegt jemand auf dem Boden! Er reagiert auf nichts mehr!",
-details: "Person zusammengebrochen, keine Reaktion auf Ansprache, Atmung unklar.",
-units: "RTW + First Responder",
-priority: "PRIORITÄT 1 - SOFORT",
-emotionalState: "aufgeregt",
-location: "Hauptbahnhof, Bahnsteig 3"
-},
-{
-type: "HÄUSLICHE GEWALT",
-icon: "⚠️",
-initialPanic: "Er schlägt sie! Ich höre Schreie aus der Nachbarwohnung! Bitte kommen Sie schnell!",
-details: "Laute Schreie und Geräusche von Gewalt aus Nachbarwohnung. Kinder möglicherweise anwesend.",
-units: "2x Streifenwagen + RTW (Bereitstellung)",
-priority: "PRIORITÄT 1 - SOFORT",
-emotionalState: "ängstlich",
-location: "Rosenstraße 8, 2. OG rechts"
-},
-{
-type: "KINDERNOTFALL",
-icon: "👶",
-initialPanic: "Mein Kind! Es hat etwas verschluckt und bekommt keine Luft mehr!",
-details: "Kleinkind, ca. 3 Jahre, Fremdkörperaspiration, akute Atemnot, Zyanose.",
-units: "RTW + NEF (Kindernotarzt wenn verfügbar)",
-priority: "PRIORITÄT 1 - SOFORT",
-emotionalState: "hysterisch",
-location: "Ahornweg 23, EG"
-}
-];
-
-var callerNames = [
-"Maria Schneider", "Thomas Weber", "Sandra Müller",
-"Klaus Fischer", "Petra Hoffmann", "Michael Braun",
-"Anna Schmidt", "Stefan Koch", "Sabine Richter"
-];
-
-var nonsenseResponses = [
-"Was?! Das ist doch jetzt völlig egal! Hier ist ein NOTFALL!",
-"Sind Sie verrückt?! Schicken Sie endlich jemanden!",
-"Ich verstehe die Frage nicht... Können wir uns bitte auf das Wichtige konzentrieren?!",
-"Das ist doch jetzt nicht Ihr Ernst! Menschen brauchen HILFE!",
-"Hören Sie mir überhaupt zu?! Es ist ein NOTFALL!",
-"Warum fragen Sie so etwas?! Bitte helfen Sie uns!",
-"Ich... was? Nein! Bitte schicken Sie Hilfe!",
-"Das spielt doch keine Rolle! BITTE!",
-"Ich kann das jetzt nicht beantworten, verstehen Sie das nicht?!",
-"Sind Sie überhaupt von der Leitstelle?! Das ist nicht relevant!"
-];
-
-var contextResponses = {
-location: [
-"Wir sind in der {location}! Bitte beeilen Sie sich!",
-"Die Adresse ist {location}! Wie lange dauert das noch?!",
-"{location}! Schnell, bitte!",
-"Ich bin... atmet schwer ...{location}!"
-],
-name: [
-"Ich heiße {name}. Bitte, Sie müssen uns helfen!",
-"{name}... mein Name ist {name}!",
-"schluchzt {name}... können Sie jetzt bitte jemanden schicken?!",
-"{name}. Aber das ist doch egal, HELFEN Sie uns!"
-],
-whatHappened: [
-"{panic} Bitte kommen Sie schnell!",
-"Ich... ich weiß nicht genau... {panic}",
-"Panik in der Stimme {panic}",
-"Es ist schrecklich! {panic}"
-],
-conscious: [
-"Ich weiß nicht! Er/Sie reagiert auf nichts, was ich tue!",
-"Nein... nein, ich glaube nicht... Oh Gott!",
-"Er/Sie hat die Augen zu! Ich weiß nicht, ob er/sie atmet!",
-"Er/Sie bewegt sich nicht mehr! HELFEN SIE!",
-"Ich bin mir nicht sicher... weint ...bitte beeilen Sie sich!"
-],
-breathing: [
-"Ich... ich weiß nicht! Ich glaube schon... nein, warten Sie... ich bin mir nicht sicher!",
-"Ganz flach... ganz flach atmet er/sie!",
-"Ich sehe nichts! Was soll ich tun?!",
-"Ich kann das nicht erkennen! Panik"
-],
-danger: [
-"Ich weiß nicht! Hier ist überall Chaos!",
-"Ich glaube nicht... aber ich bin mir nicht sicher!",
-"Vielleicht! Ich weiß es nicht! Kommen Sie einfach!",
-"Nein, aber die Situation ist schlimm!"
-],
-howMany: [
-"Ich weiß nicht genau... mindestens eine Person... vielleicht mehr!",
-"Eine Person auf jeden Fall! Aber hier sind noch andere Leute!",
-"Ich... ich kann das nicht zählen! Bitte kommen Sie einfach!",
-"zählt hektisch ...zwei... nein, drei Leute brauchen Hilfe!"
-],
-stayCalm: [
-"atmet tief Okay... okay, ich versuche es...",
-"Wie soll ich ruhig bleiben?! Haben Sie eine Ahnung, was hier los ist?!",
-"Ich versuche es... schluchzt ...ich versuche es wirklich!",
-"Ja... ja, Sie haben recht... atmet zitternd"
-],
-help: [
-"Ich versuche zu helfen, aber ich weiß nicht wie!",
-"Was soll ich tun?! Sagen Sie mir, was ich tun soll!",
-"Ich mache alles, was Sie sagen! Aber bitte schnell!",
-"Ich bin hier bei ihm/ihr... was jetzt?!"
-],
-hurry: [
-"Bitte beeilen Sie sich! Ich weiß nicht, wie lange noch...!",
-"Jede Sekunde zählt! BITTE!",
-"Wie lange dauert das noch?! Wir haben keine Zeit!",
-"Schnell, schnell, SCHNELL!"
-]
-};
-
-var emotionalExpressions = {
-panisch: ["schreit", "kreischt", "OH GOTT!", "hyperventiliert"],
-verzweifelt: ["weint", "schluchzt", "Stimme bricht", "flüstert"],
-schockiert: ["stammelt", "Stimme zittert", "kann kaum sprechen", "stockt"],
-aufgeregt: ["spricht schnell", "hektisch", "aufgeregt", "atemlos"],
-ängstlich: ["flüstert ängstlich", "Stimme zittert", "versteckt sich", "leise"],
-hysterisch: ["schreit hysterisch", "außer sich", "völlig aufgelöst", "kreischt"]
-};
-
-function addLogEntry(text, type) {
-var entry = document.createElement('div');
-entry.className = 'log-entry ' + type;
-entry.innerHTML = text;
-consoleLog.appendChild(entry);
-scrollToBottom();
-}
-
-function addTypingIndicator() {
-var indicator = document.createElement('div');
-indicator.className = 'typing-indicator';
-indicator.id = 'typingIndicator';
-indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-consoleLog.appendChild(indicator);
-scrollToBottom();
-}
-
-function removeTypingIndicator() {
-var indicator = document.getElementById('typingIndicator');
-if (indicator) indicator.remove();
-}
-
-function scrollToBottom() {
-consoleContainer.scrollTop = consoleContainer.scrollHeight;
-}
-
-function sleep(ms) {
-return new Promise(function(resolve) {
-setTimeout(resolve, ms);
-});
-}
-
-function getRandomItem(array) {
-return array[Math.floor(Math.random() * array.length)];
-}
-
-function addEmotionalExpression(text) {
-if (currentIncident && Math.random() > 0.4) {
-var expressions = emotionalExpressions[currentIncident.emotionalState];
-var expr = getRandomItem(expressions);
-if (Math.random() > 0.5) {
-return expr + " " + text;
-} else {
-return text + " " + expr;
-}
-}
-return text;
-}
-
-function analyzeUserInput(input) {
-var lowerInput = input.toLowerCase();
-
-lisp
-if (lowerInput.indexOf("wo ") !== -1 || lowerInput.indexOf("adresse") !== -1 || 
-    lowerInput.indexOf("standort") !== -1 || lowerInput.indexOf("ort") !== -1 ||
-    lowerInput.indexOf("straße") !== -1 || lowerInput.indexOf("wo sind") !== -1 ||
-    lowerInput.indexOf("wo befinden") !== -1) {
-    var response = getRandomItem(contextResponses.location);
-    return response.replace("{location}", callerInfo.location);
-}
-
-if (lowerInput.indexOf("name") !== -1 || lowerInput.indexOf("wer sind sie") !== -1 ||
-    lowerInput.indexOf("wie heißen") !== -1 || lowerInput.indexOf("ihr name") !== -1) {
-    var response = getRandomItem(contextResponses.name);
-    return response.replace("{name}", callerInfo.name);
-}
-
-if (lowerInput.indexOf("was ist passiert") !== -1 || lowerInput.indexOf("was ist los") !== -1 ||
-    lowerInput.indexOf("erzählen sie") !== -1 || lowerInput.indexOf("was genau") !== -1 ||
-    lowerInput.indexOf("schildern") !== -1 || lowerInput.indexOf("beschreiben") !== -1) {
-    var response = getRandomItem(contextResponses.whatHappened);
-    return response.replace("{panic}", currentIncident.initialPanic);
-}
-
-if (lowerInput.indexOf("bewusst") !== -1 || lowerInput.indexOf("ansprechbar") !== -1 ||
-    lowerInput.indexOf("reagiert") !== -1 || lowerInput.indexOf("wach") !== -1) {
-    return addEmotionalExpression(getRandomItem(contextResponses.conscious));
-}
-
-if (lowerInput.indexOf("atm") !== -1 || lowerInput.indexOf("atem") !== -1 ||
-    lowerInput.indexOf("luft") !== -1) {
-    return addEmotionalExpression(getRandomItem(contextResponses.breathing));
-}
-
-if (lowerInput.indexOf("gefahr") !== -1 || lowerInput.indexOf("sicher") !== -1 ||
-    lowerInput.indexOf("gefährlich") !== -1 || lowerInput.indexOf("bedroht") !== -1) {
-    return addEmotionalExpression(getRandomItem(contextResponses.danger));
-}
-
-if (lowerInput.indexOf("wie viele") !== -1 || lowerInput.indexOf("wieviele") !== -1 ||
-    lowerInput.indexOf("anzahl") !== -1 || lowerInput.indexOf("personen") !== -1) {
-    return addEmotionalExpression(getRandomItem(contextResponses.howMany));
-}
-
-if (lowerInput.indexOf("ruhig") !== -1 || lowerInput.indexOf("beruhig") !== -1 ||
-    lowerInput.indexOf("entspann") !== -1 || lowerInput.indexOf("tief durchatmen") !== -1) {
-    return addEmotionalExpression(getRandomItem(contextResponses.stayCalm));
-}
-
-if (lowerInput.indexOf("helfen") !== -1 || lowerInput.indexOf("hilfe") !== -1 ||
-    lowerInput.indexOf("erste hilfe") !== -1 || lowerInput.indexOf("was soll ich") !== -1) {
-    return addEmotionalExpression(getRandomItem(contextResponses.help));
-}
-
-if (lowerInput.indexOf("unterwegs") !== -1 || lowerInput.indexOf("schicke") !== -1 ||
-    lowerInput.indexOf("kommt") !== -1 || lowerInput.indexOf("wie lange") !== -1 ||
-    lowerInput.indexOf("bald") !== -1 || lowerInput.indexOf("schnell") !== -1) {
-    return addEmotionalExpression(getRandomItem(contextResponses.hurry));
-}
-
-if (lowerInput.endsWith("?")) {
-    if (Math.random() > 0.5) {
-        var yesNo = ["Ja! Ja, ich glaube schon!", "Nein! Nein, ich weiß nicht!", 
-                    "Ich bin mir nicht sicher!", "Vielleicht... ich weiß es nicht!"];
-        return addEmotionalExpression(getRandomItem(yesNo));
-    }
-}
-
-if (lowerInput.indexOf("danke") !== -1 || lowerInput.indexOf("hilfe kommt") !== -1 ||
-    lowerInput.indexOf("einsatzkräfte") !== -1) {
-    var relief = [
-        "Gott sei Dank! Bitte schnell!",
-        "Danke! Danke! Bitte beeilen Sie sich!",
-        "Oh, endlich! Wie lange noch?!",
-        "*erleichtert* Bitte, jede Sekunde zählt!"
-    ];
-    return addEmotionalExpression(getRandomItem(relief));
-}
-
-return addEmotionalExpression(getRandomItem(nonsenseResponses));
 
 }
 
-async function simulateCallerResponse(userMessage) {
-addTypingIndicator();
-await sleep(1000 + Math.random() * 1500);
-removeTypingIndicator();
+</style>
 
-var response = analyzeUserInput(userMessage);
-addLogEntry(response, 'anrufer');
+<script>
 
-}
+const consoleDiv = document.getElementById('console');
 
-async function startSimulation() {
-welcomeScreen.style.display = 'none';
-startBtn.disabled = true;
-statusDot.classList.add('active');
-statusText.textContent = 'Anruf aktiv';
-questionCount = 0;
+const userInput = document.getElementById('userInput');
 
-scheme
-currentIncident = getRandomItem(incidents);
-callerInfo.name = getRandomItem(callerNames);
-callerInfo.location = currentIncident.location;
+const sendButton = document.getElementById('sendButton');
 
-addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-addLogEntry('📞 EINGEHENDER NOTRUF', 'system');
-addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-await sleep(800);
-addLogEntry('*Telefon klingelt*', 'system');
-await sleep(1500);
-addLogEntry('Verbindung hergestellt...', 'system');
-await sleep(1000);
+let emergencyTopics = ["Herzinfarkt", "Wohnungsbrand", "Verkehrsunfall", "bewusstlose Person"];
 
-var openings = [
-    "*außer Atem* Hallo?! Hallo, ist da jemand?! " + currentIncident.initialPanic,
-    currentIncident.initialPanic + " Bitte helfen Sie uns! BITTE!",
-    "*schreit ins Telefon* " + currentIncident.initialPanic + " Oh Gott, oh Gott!",
-    "Hilfe! HILFE! " + currentIncident.initialPanic
-];
+let countdown;
 
-addLogEntry(addEmotionalExpression(getRandomItem(openings)), 'anrufer');
+function randomEmergency() {
 
-await sleep(500);
-userInput.disabled = false;
-userInput.placeholder = "Ihre Frage oder Anweisung...";
-userInput.focus();
+return emergencyTopics[Math.floor(Math.random() * emergencyTopics.length)];
 
 }
 
-async function handleUserInput() {
-var input = userInput.value.trim();
-if (!input) return;
+function addMessage(message, type) {
 
-ini
-addLogEntry(input, 'user');
+const msg = document.createElement('div');
+
+msg.textContent = message;
+
+msg.className = type;
+
+consoleDiv.appendChild(msg);
+
+consoleDiv.scrollTop = consoleDiv.scrollHeight;
+
+}
+
+function handleUserInput() {
+
+const userText = userInput.value;
+
+addMessage(`Disponent: ${userText}`, 'disponent');
+
 userInput.value = '';
-userInput.disabled = true;
 
-questionCount++;
 
-await simulateCallerResponse(input);
+if (userText) {
 
-if (questionCount >= maxQuestions) {
-    await sleep(1000);
-    await endCallAndGenerateIncident();
+if (Math.random() < 0.5) {
+
+addMessage(`Anrufer: Ich bin so gestresst! ${randomEmergency()} passiert!`, 'anrufer');
+
+startCountdown();
+
 } else {
-    await sleep(300);
-    userInput.disabled = false;
-    userInput.focus();
+
+addMessage(`Anrufer: Das ist doch nicht wichtig, mein Haus brennt!`, 'anrufer');
+
+startCountdown();
+
+}
+
 }
 
 }
 
-async function endCallAndGenerateIncident() {
-userInput.disabled = true;
-userInput.placeholder = "Gespräch beendet";
+function startCountdown() {
 
-scheme
-addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-addLogEntry('✓ INFORMATIONSAUFNAHME ABGESCHLOSSEN', 'system');
-addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+clearInterval(countdown);
 
-await sleep(1000);
-addLogEntry('Einsatz wird generiert...', 'system');
-await sleep(1500);
+let timeLeft = 60;
 
-var incidentHTML = '<div class="incident-title">' + currentIncident.icon + ' ' + currentIncident.type + '</div>' +
-    '<div class="incident-details">' +
-    '<strong>Einsatzort:</strong> ' + callerInfo.location + '<br>' +
-    '<strong>Melder:</strong> ' + callerInfo.name + '<br>' +
-    '<strong>Lagemeldung:</strong> ' + currentIncident.details + '<br>' +
-    '<strong>Alarmierte Einheiten:</strong> ' + currentIncident.units + '<br>' +
-    '<strong>Einstufung:</strong> <span style="color: #f85149;">' + currentIncident.priority + '</span>' +
-    '</div>';
+const timer = document.createElement('div');
 
-var incidentEntry = document.createElement('div');
-incidentEntry.className = 'log-entry incident';
-incidentEntry.innerHTML = incidentHTML;
-consoleLog.appendChild(incidentEntry);
-scrollToBottom();
+timer.id = 'timer';
 
-await sleep(1000);
-addLogEntry('🚨 EINSATZKRÄFTE SOFORT ALARMIEREN!', 'alert');
+consoleDiv.appendChild(timer);
 
-startTimer(30);
+
+countdown = setInterval(() => {
+
+timeLeft--;
+
+timer.textContent = `Zeit bis zur Hilfe: ${timeLeft} Sekunden`;
+
+if (timeLeft <= 0) {
+
+clearInterval(countdown);
+
+addMessage("Einsatzberichte: Die Hilfe ist angekommen.", 'info');
+
+timer.remove();
 
 }
 
-function startTimer(seconds) {
-var timerDiv = document.createElement('div');
-timerDiv.className = 'timer-display';
-timerDiv.innerHTML = '<div class="timer-label">⏱️ REAKTIONSZEIT</div>' +
-'<div class="timer-value" id="timerValue">' + seconds + '</div>';
-consoleLog.appendChild(timerDiv);
-scrollToBottom();
-
-basic
-var timerValue = document.getElementById('timerValue');
-var remaining = seconds;
-
-timerInterval = setInterval(function() {
-    remaining--;
-    timerValue.textContent = remaining;
-    
-    if (remaining <= 10) {
-        timerValue.classList.add('critical');
-    }
-    
-    if (remaining <= 0) {
-        clearInterval(timerInterval);
-        timerValue.textContent = '0';
-        addLogEntry('⏱️ ZEIT ABGELAUFEN - Einheiten sollten alarmiert sein!', 'alert');
-        statusDot.classList.remove('active');
-        statusText.textContent = 'Simulation beendet';
-        startBtn.disabled = false;
-        startBtn.textContent = 'Neuer Anruf';
-    }
 }, 1000);
 
 }
 
-function resetSimulation() {
-if (timerInterval) clearInterval(timerInterval);
-questionCount = 0;
-callerInfo = {};
-currentIncident = null;
-consoleLog.innerHTML = '';
-welcomeScreen.style.display = 'block';
-consoleLog.appendChild(welcomeScreen);
-userInput.value = '';
-userInput.disabled = true;
-userInput.placeholder = 'Ihre Frage oder Anweisung...';
-statusDot.classList.remove('active');
-statusText.textContent = 'System bereit';
-startBtn.textContent = 'Anruf starten';
-}
+sendButton.addEventListener('click', handleUserInput);
 
-startBtn.addEventListener('click', function() {
-if (startBtn.textContent === 'Neuer Anruf') {
-resetSimulation();
-}
-startSimulation();
+userInput.addEventListener('keypress', (e) => {
+
+if (e.key === 'Enter') handleUserInput();
+
 });
 
-userInput.addEventListener('keypress', function(e) {
-if (e.key === 'Enter' && !userInput.disabled) {
-handleUserInput();
-}
-});
-
+</script>
