@@ -1,3 +1,15 @@
+
+const keySound = new Audio("766627__stavsounds__keyboard_tactile_11.ogg");
+keySound.volume = 0.3; // optional, Lautstärke anpassen
+
+const inputBox = document.getElementById("input");
+inputBox.addEventListener("keydown", (e) => {
+    if (e.key.length === 1) { // nur echte Zeichen, keine Shift/Ctrl usw.
+        keySound.currentTime = 0;
+        keySound.play();
+    }
+});
+
 "use strict";
 
 // Texte
