@@ -1,1 +1,83 @@
+{
+box-sizing: border-box;
+font-family: "Segoe UI", Arial, sans-serif;
+}
 
+body {
+margin: 0;
+height: 100vh;
+background: #0b0f14;
+color: #e6e6e6;
+}
+
+#app {
+display: flex;
+flex-direction: column;
+height: 100vh;
+}
+
+/* HEADER */
+#header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 12px 20px;
+background: #111820;
+border-bottom: 1px solid #1f2a36;
+}
+
+.title {
+letter-spacing: 2px;
+font-size: 14px;
+}
+
+#timer {
+color: #ff4d4d;
+font-weight: bold;
+}
+
+/* CONSOLE */
+#console {
+flex: 1;
+padding: 20px;
+overflow-y: auto;
+background: radial-gradient(circle at center, #0f1620 0%, #0b0f14 70%);
+}
+
+.message {
+margin-bottom: 14px;
+line-height: 1.5;
+}
+
+.dispatcher {
+color: #6bbcff;
+}
+
+.caller {
+color: #ffb86b;
+}
+
+/* INPUT */
+#inputArea {
+padding: 10px;
+background: #111820;
+border-top: 1px solid #1f2a36;
+}
+
+#userInput {
+width: 100%;
+padding: 12px;
+font-size: 14px;
+background: #0b0f14;
+border: 1px solid #1f2a36;
+color: #e6e6e6;
+}
+
+#userInput::placeholder {
+color: #777;
+}
+
+#userInput:focus {
+outline: none;
+border-color: #6bbcff;
+}
