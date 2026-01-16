@@ -1,202 +1,490 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Leitstellen Stress Test – Thonny Stil</title>
-    <style>
-        body {
-            font-family: Consolas, monospace;
-            background: #0d1117;
-            color: #e6edf3;
-            margin: 0;
-            padding: 20px;
-        }
+const consoleLog = document.getElementById('consoleLog');
+const consoleContainer = document.getElementById('consoleContainer');
+const userInput = document.getElementById('userInput');
+const startBtn = document.getElementById('startBtn');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const welcomeScreen = document.getElementById('welcomeScreen');
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+let questionCount = 0;
+let maxQuestions = 6;
+let callerInfo = {};
+let timerInterval = null;
+let currentIncident = null;
 
-        .console-box {
-            background: #161b22;
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            box-shadow: 0 0 10px #000;
-        }
-
-        #dialog {
-            background: #0d1117;
-            border-radius: 8px;
-            padding: 10px;
-            height: 260px;
-            overflow-y: auto;
-            border: 1px solid #30363d;
-            white-space: pre-wrap;
-            font-size: 14px;
-        }
-
-        #eingabe {
-            width: 100%;
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: #e6edf3;
-            font-family: Consolas, monospace;
-        }
-
-        #eingabe:disabled {
-            opacity: 0.5;
-        }
-
-        button {
-            margin-top: 10px;
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: none;
-            background: #238636;
-            color: white;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #2ea043;
-        }
-
-        #einsatzInfo {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            background: #111827;
-            border: 1px solid #30363d;
-            font-size: 14px;
-        }
-
-        #timer {
-            margin-top: 10px;
-            font-size: 18px;
-            color: #ff5555;
-            text-align: right;
-        }
-    </style>
-</head>
-<body>
-
-<h1>Leitstellen Stress Test – Thonny Stil</h1>
-
-<div class="console-box">
-    <div id="dialog"></div>
-
-    <input id="eingabe" placeholder="Antwort eingeben und Enter drücken..." disabled>
-    <button id="startBtn" onclick="startNotruf()">Notruf starten</button>
-
-    <div id="einsatzInfo"></div>
-    <div id="timer"></div>
-</div>
-
-<script>
-    const fragen = [
-        "Notruf Feuerwehr und Rettungsdienst, wo genau ist der Notfallort?",
-        "Was ist passiert?",
-        "Wie viele Verletzte gibt es?",
-        "Ist die Person ansprechbar?",
-        "Bleiben Sie bitte bei der Person, Hilfe ist unterwegs."
-    ];
-
-    const einsaetze = [
-        { titel: "Bewusstlose Person", details: "RTW + NEF – Reanimation möglich" },
-        { titel: "Verkehrsunfall", details: "2 Verletzte – B27 – Feuerwehr + 2x RTW + NEF" },
-        { titel: "Wohnungsbrand", details: "Mehrere Anrufer – Feuerwehr + RTW + Polizei" },
-        { titel: "Herzinfarkt", details: "Brustschmerzen – RTW + NEF – EKG vorbereiten" }
-    ];
-
-    let frageIndex = 0;
-    let dialogText = "";
-    let timerInterval;
-
-    const dialogEl = document.getElementById("dialog");
-    const eingabeEl = document.getElementById("eingabe");
-    const einsatzInfoEl = document.getElementById("einsatzInfo");
-    const timerEl = document.getElementById("timer");
-    const startBtn = document.getElementById("startBtn");
-
-    function printZeile(text) {
-        dialogText += text + "\n";
-        dialogEl.textContent = dialogText;
-        dialogEl.scrollTop = dialogEl.scrollHeight;
+// Verfügbare Notfall-Szenarien
+const incidents = [
+    {
+        type: "WOHNUNGSBRAND",
+        icon: "🔥",
+        initialPanic: "Es brennt! Oh Gott, es brennt! Überall ist Rauch!",
+        details: "Feuer im Mehrfamilienhaus, 3. Stock. Starke Rauchentwicklung. Personen möglicherweise eingeschlossen.",
+        units: "2x Löschzug + Drehleiter + RTW",
+        priority: "PRIORITÄT 1 - SOFORT",
+        keywords: ["feuer", "brand", "rauch", "brennt", "flammen", "qualm"],
+        emotionalState: "panisch",
+        location: "Musterstraße 47, 3. OG links"
+    },
+    {
+        type: "HERZINFARKT",
+        icon: "💔",
+        initialPanic: "Mein Mann! Er fasst sich an die Brust und kann nicht mehr atmen!",
+        details: "Männlich, ca. 65 Jahre, akute Brustschmerzen, Atemnot, kalter Schweiß.",
+        units: "RTW + NEF",
+        priority: "PRIORITÄT 1 - SOFORT",
+        keywords: ["herz", "brust", "schmerzen", "atmen", "atem", "bewusstlos"],
+        emotionalState: "verzweifelt",
+        location: "Lindenweg 12, Einfamilienhaus"
+    },
+    {
+        type: "VERKEHRSUNFALL",
+        icon: "🚗",
+        initialPanic: "Ein schlimmer Unfall! Die Autos sind total zerstört! Jemand ist eingeklemmt!",
+        details: "Frontalzusammenstoß zweier PKW. Mind. 2 Verletzte, 1 Person eingeklemmt.",
+        units: "RTW + NEF + Feuerwehr (Rüstzug) + Polizei",
+        priority: "PRIORITÄT 1 - SOFORT",
+        keywords: ["unfall", "auto", "crash", "eingeklemmt", "blut", "verletzt"],
+        emotionalState: "schockiert",
+        location: "B27, Höhe Kilometer 34, Richtung Norden"
+    },
+    {
+        type: "BEWUSSTLOSE PERSON",
+        icon: "🫀",
+        initialPanic: "Hier liegt jemand auf dem Boden! Er reagiert auf nichts mehr!",
+        details: "Person zusammengebrochen, keine Reaktion auf Ansprache, Atmung unklar.",
+        units: "RTW + First Responder",
+        priority: "PRIORITÄT 1 - SOFORT",
+        keywords: ["bewusstlos", "liegt", "reagiert nicht", "umgefallen", "kollabiert"],
+        emotionalState: "aufgeregt",
+        location: "Hauptbahnhof, Bahnsteig 3"
+    },
+    {
+        type: "HÄUSLICHE GEWALT",
+        icon: "⚠️",
+        initialPanic: "Er schlägt sie! Ich höre Schreie aus der Nachbarwohnung! Bitte kommen Sie schnell!",
+        details: "Laute Schreie und Geräusche von Gewalt aus Nachbarwohnung. Kinder möglicherweise anwesend.",
+        units: "2x Streifenwagen + RTW (Bereitstellung)",
+        priority: "PRIORITÄT 1 - SOFORT",
+        keywords: ["schlägt", "schreie", "gewalt", "streit", "hilfe"],
+        emotionalState: "ängstlich",
+        location: "Rosenstraße 8, 2. OG rechts"
+    },
+    {
+        type: "KINDERNOTFALL",
+        icon: "👶",
+        initialPanic: "Mein Kind! Es hat etwas verschluckt und bekommt keine Luft mehr!",
+        details: "Kleinkind, ca. 3 Jahre, Fremdkörperaspiration, akute Atemnot, Zyanose.",
+        units: "RTW + NEF (Kindernotarzt wenn verfügbar)",
+        priority: "PRIORITÄT 1 - SOFORT",
+        keywords: ["kind", "baby", "verschluckt", "atmet nicht", "blau"],
+        emotionalState: "hysterisch",
+        location: "Ahornweg 23, EG"
     }
+];
 
-    function startNotruf() {
-        dialogText = "";
-        frageIndex = 0;
-        einsatzInfoEl.textContent = "";
-        timerEl.textContent = "";
-        clearInterval(timerInterval);
+// Anrufer-Namen
+const callerNames = [
+    "Maria Schneider", "Thomas Weber", "Sandra Müller", 
+    "Klaus Fischer", "Petra Hoffmann", "Michael Braun",
+    "Anna Schmidt", "Stefan Koch", "Sabine Richter"
+];
 
-        printZeile(">>> Neuer Notruf eingegangen");
-        printZeile("DISP: " + fragen[frageIndex]);
-        eingabeEl.disabled = false;
-        eingabeEl.value = "";
-        eingabeEl.focus();
-        startBtn.disabled = true;
-    }
+// Reaktionen auf unsinnige/unpassende Fragen
+const nonsenseResponses = [
+    "Was?! Das ist doch jetzt völlig egal! Hier ist ein NOTFALL!",
+    "Sind Sie verrückt?! Schicken Sie endlich jemanden!",
+    "Ich verstehe die Frage nicht... Können wir uns bitte auf das Wichtige konzentrieren?!",
+    "Das ist doch jetzt nicht Ihr Ernst! Menschen brauchen HILFE!",
+    "Hören Sie mir überhaupt zu?! Es ist ein NOTFALL!",
+    "Warum fragen Sie so etwas?! Bitte helfen Sie uns!",
+    "Ich... was? Nein! Bitte schicken Sie Hilfe!",
+    "Das spielt doch keine Rolle! BITTE!",
+    "Ich kann das jetzt nicht beantworten, verstehen Sie das nicht?!",
+    "Sind Sie überhaupt von der Leitstelle?! Das ist nicht relevant!"
+];
 
-    function verarbeiteAntwort() {
-        const antwort = eingabeEl.value.trim();
-        if (antwort === "") return;
+// Kontextbasierte Antworten
+const contextResponses = {
+    location: [
+        "Wir sind in der {location}! Bitte beeilen Sie sich!",
+        "Die Adresse ist {location}! Wie lange dauert das noch?!",
+        "{location}! Schnell, bitte!",
+        "Ich bin... *atmet schwer* ...{location}!"
+    ],
+    name: [
+        "Ich heiße {name}. Bitte, Sie müssen uns helfen!",
+        "{name}... mein Name ist {name}!",
+        "*schluchzt* {name}... können Sie jetzt bitte jemanden schicken?!",
+        "{name}. Aber das ist doch egal, HELFEN Sie uns!"
+    ],
+    whatHappened: [
+        "{panic} Bitte kommen Sie schnell!",
+        "Ich... ich weiß nicht genau... {panic}",
+        "*Panik in der Stimme* {panic}",
+        "Es ist schrecklich! {panic}"
+    ],
+    conscious: [
+        "Ich weiß nicht! Er/Sie reagiert auf nichts, was ich tue!",
+        "Nein... nein, ich glaube nicht... Oh Gott!",
+        "Er/Sie hat die Augen zu! Ich weiß nicht, ob er/sie atmet!",
+        "Er/Sie bewegt sich nicht mehr! HELFEN SIE!",
+        "Ich bin mir nicht sicher... *weint* ...bitte beeilen Sie sich!"
+    ],
+    breathing: [
+        "Ich... ich weiß nicht! Ich glaube schon... nein, warten Sie... ich bin mir nicht sicher!",
+        "Ganz flach... ganz flach atmet er/sie!",
+        "Ich sehe nichts! Was soll ich tun?!",
+        "Ich kann das nicht erkennen! *Panik*"
+    ],
+    danger: [
+        "Ich weiß nicht! Hier ist überall Chaos!",
+        "Ich glaube nicht... aber ich bin mir nicht sicher!",
+        "Vielleicht! Ich weiß es nicht! Kommen Sie einfach!",
+        "Nein, aber die Situation ist schlimm!"
+    ],
+    howMany: [
+        "Ich weiß nicht genau... mindestens eine Person... vielleicht mehr!",
+        "Eine Person auf jeden Fall! Aber hier sind noch andere Leute!",
+        "Ich... ich kann das nicht zählen! Bitte kommen Sie einfach!",
+        "*zählt hektisch* ...zwei... nein, drei Leute brauchen Hilfe!"
+    ],
+    stayCalm: [
+        "*atmet tief* Okay... okay, ich versuche es...",
+        "Wie soll ich ruhig bleiben?! Haben Sie eine Ahnung, was hier los ist?!",
+        "Ich versuche es... *schluchzt* ...ich versuche es wirklich!",
+        "Ja... ja, Sie haben recht... *atmet zitternd*"
+    ],
+    help: [
+        "Ich versuche zu helfen, aber ich weiß nicht wie!",
+        "Was soll ich tun?! Sagen Sie mir, was ich tun soll!",
+        "Ich mache alles, was Sie sagen! Aber bitte schnell!",
+        "Ich bin hier bei ihm/ihr... was jetzt?!"
+    ],
+    hurry: [
+        "Bitte beeilen Sie sich! Ich weiß nicht, wie lange noch...!",
+        "Jede Sekunde zählt! BITTE!",
+        "Wie lange dauert das noch?! Wir haben keine Zeit!",
+        "Schnell, schnell, SCHNELL!"
+    ]
+};
 
-        printZeile("ANRUF: " + antwort);
-        eingabeEl.value = "";
+// Emotionale Ausdrücke basierend auf Zustand
+const emotionalExpressions = {
+    panisch: ["*schreit*", "*kreischt*", "OH GOTT!", "*hyperventiliert*"],
+    verzweifelt: ["*weint*", "*schluchzt*", "*Stimme bricht*", "*flüstert*"],
+    schockiert: ["*stammelt*", "*Stimme zittert*", "*kann kaum sprechen*", "*stockt*"],
+    aufgeregt: ["*spricht schnell*", "*hektisch*", "*aufgeregt*", "*atemlos*"],
+    ängstlich: ["*flüstert ängstlich*", "*Stimme zittert*", "*versteckt sich*", "*leise*"],
+    hysterisch: ["*schreit hysterisch*", "*außer sich*", "*völlig aufgelöst*", "*kreischt*"]
+};
 
-        frageIndex++;
+function addLogEntry(text, type) {
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.innerHTML = text;
+    consoleLog.appendChild(entry);
+    scrollToBottom();
+}
 
-        if (frageIndex < fragen.length) {
-            printZeile("DISP: " + fragen[frageIndex]);
+function addTypingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'typing-indicator';
+    indicator.id = 'typingIndicator';
+    indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    consoleLog.appendChild(indicator);
+    scrollToBottom();
+}
+
+function removeTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) indicator.remove();
+}
+
+function scrollToBottom() {
+    consoleContainer.scrollTop = consoleContainer.scrollHeight;
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getRandomItem(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+function addEmotionalExpression(text) {
+    if (currentIncident && Math.random() > 0.4) {
+        const expressions = emotionalExpressions[currentIncident.emotionalState];
+        const expr = getRandomItem(expressions);
+        if (Math.random() > 0.5) {
+            return expr + " " + text;
         } else {
-            eingabeEl.disabled = true;
-            printZeile("DISP: Danke, wir schicken sofort Hilfe.");
-            startEinsatz();
+            return text + " " + expr;
+        }
+    }
+    return text;
+}
+
+function analyzeUserInput(input) {
+    const lowerInput = input.toLowerCase();
+    
+    // Prüfe auf Schlüsselwörter für kontextbasierte Antworten
+    
+    // Standort/Adresse
+    if (lowerInput.includes("wo ") || lowerInput.includes("adresse") || 
+        lowerInput.includes("standort") || lowerInput.includes("ort") ||
+        lowerInput.includes("straße") || lowerInput.includes("wo sind") ||
+        lowerInput.includes("wo befinden")) {
+        let response = getRandomItem(contextResponses.location);
+        return response.replace("{location}", callerInfo.location);
+    }
+    
+    // Name
+    if (lowerInput.includes("name") || lowerInput.includes("wer sind sie") ||
+        lowerInput.includes("wie heißen") || lowerInput.includes("ihr name")) {
+        let response = getRandomItem(contextResponses.name);
+        return response.replace("{name}", callerInfo.name);
+    }
+    
+    // Was ist passiert
+    if (lowerInput.includes("was ist passiert") || lowerInput.includes("was ist los") ||
+        lowerInput.includes("erzählen sie") || lowerInput.includes("was genau") ||
+        lowerInput.includes("schildern") || lowerInput.includes("beschreiben")) {
+        let response = getRandomItem(contextResponses.whatHappened);
+        return response.replace("{panic}", currentIncident.initialPanic);
+    }
+    
+    // Bei Bewusstsein
+    if (lowerInput.includes("bewusst") || lowerInput.includes("ansprechbar") ||
+        lowerInput.includes("reagiert") || lowerInput.includes("wach")) {
+        return addEmotionalExpression(getRandomItem(contextResponses.conscious));
+    }
+    
+    // Atmung
+    if (lowerInput.includes("atm") || lowerInput.includes("atem") ||
+        lowerInput.includes("luft")) {
+        return addEmotionalExpression(getRandomItem(contextResponses.breathing));
+    }
+    
+    // Gefahr
+    if (lowerInput.includes("gefahr") || lowerInput.includes("sicher") ||
+        lowerInput.includes("gefährlich") || lowerInput.includes("bedroht")) {
+        return addEmotionalExpression(getRandomItem(contextResponses.danger));
+    }
+    
+    // Wie viele Personen
+    if (lowerInput.includes("wie viele") || lowerInput.includes("wieviele") ||
+        lowerInput.includes("anzahl") || lowerInput.includes("personen")) {
+        return addEmotionalExpression(getRandomItem(contextResponses.howMany));
+    }
+    
+    // Beruhigung
+    if (lowerInput.includes("ruhig") || lowerInput.includes("beruhig") ||
+        lowerInput.includes("entspann") || lowerInput.includes("tief durchatmen")) {
+        return addEmotionalExpression(getRandomItem(contextResponses.stayCalm));
+    }
+    
+    // Helfen
+    if (lowerInput.includes("helfen") || lowerInput.includes("hilfe") ||
+        lowerInput.includes("erste hilfe") || lowerInput.includes("was soll ich")) {
+        return addEmotionalExpression(getRandomItem(contextResponses.help));
+    }
+    
+    // Beeilen
+    if (lowerInput.includes("unterwegs") || lowerInput.includes("schicke") ||
+        lowerInput.includes("kommt") || lowerInput.includes("wie lange") ||
+        lowerInput.includes("bald") || lowerInput.includes("schnell")) {
+        return addEmotionalExpression(getRandomItem(contextResponses.hurry));
+    }
+    
+    // Ja/Nein Fragen
+    if (lowerInput.endsWith("?")) {
+        if (Math.random() > 0.5) {
+            const yesNo = ["Ja! Ja, ich glaube schon!", "Nein! Nein, ich weiß nicht!", 
+                          "Ich bin mir nicht sicher!", "Vielleicht... ich weiß es nicht!"];
+            return addEmotionalExpression(getRandomItem(yesNo));
+        }
+    }
+    
+    // Bestätigung/Danke
+    if (lowerInput.includes("danke") || lowerInput.includes("hilfe kommt") ||
+        lowerInput.includes("einsatzkräfte")) {
+        const relief = [
+            "Gott sei Dank! Bitte schnell!",
+            "Danke! Danke! Bitte beeilen Sie sich!",
+            "Oh, endlich! Wie lange noch?!",
+            "*erleichtert* Bitte, jede Sekunde zählt!"
+        ];
+        return addEmotionalExpression(getRandomItem(relief));
+    }
+    
+    // Unsinnige/nicht relevante Fragen -> frustrierte Reaktion
+    return addEmotionalExpression(getRandomItem(nonsenseResponses));
+}
+
+async function simulateCallerResponse(userMessage) {
+    addTypingIndicator();
+    await sleep(1000 + Math.random() * 1500);
+    removeTypingIndicator();
+    
+    const response = analyzeUserInput(userMessage);
+    addLogEntry(response, 'anrufer');
+}
+
+async function startSimulation() {
+    welcomeScreen.style.display = 'none';
+    startBtn.disabled = true;
+    statusDot.classList.add('active');
+    statusText.textContent = 'Anruf aktiv';
+    questionCount = 0;
+    
+    // Zufälliges Szenario wählen
+    currentIncident = getRandomItem(incidents);
+    callerInfo.name = getRandomItem(callerNames);
+    callerInfo.location = currentIncident.location;
+    
+    addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+    addLogEntry('📞 EINGEHENDER NOTRUF', 'system');
+    addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+    await sleep(800);
+    addLogEntry('*Telefon klingelt*', 'system');
+    await sleep(1500);
+    addLogEntry('Verbindung hergestellt...', 'system');
+    await sleep(1000);
+    
+    // Anrufer meldet sich zuerst panisch
+    const openings = [
+        `*außer Atem* Hallo?! Hallo, ist da jemand?! ${currentIncident.initialPanic}`,
+        `${currentIncident.initialPanic} Bitte helfen Sie uns! BITTE!`,
+        `*schreit ins Telefon* ${currentIncident.initialPanic} Oh Gott, oh Gott!`,
+        `Hilfe! HILFE! ${currentIncident.initialPanic}`
+    ];
+    
+    addLogEntry(addEmotionalExpression(getRandomItem(openings)), 'anrufer');
+    
+    await sleep(500);
+    userInput.disabled = false;
+    userInput.placeholder = "Ihre Frage oder Anweisung...";
+    userInput.focus();
+}
+
+async function handleUserInput() {
+    const input = userInput.value.trim();
+    if (!input) return;
+    
+    addLogEntry(input, 'user');
+    userInput.value = '';
+    userInput.disabled = true;
+    
+    questionCount++;
+    
+    await simulateCallerResponse(input);
+    
+    // Nach genügend Fragen das Gespräch beenden
+    if (questionCount >= maxQuestions) {
+        await sleep(1000);
+        await endCallAndGenerateIncident();
+    } else {
+        await sleep(300);
+        userInput.disabled = false;
+        userInput.focus();
+    }
+}
+
+async function endCallAndGenerateIncident() {
+    userInput.disabled = true;
+    userInput.placeholder = "Gespräch beendet";
+    
+    addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+    addLogEntry('✓ INFORMATIONSAUFNAHME ABGESCHLOSSEN', 'system');
+    addLogEntry('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+    
+    await sleep(1000);
+    addLogEntry('Einsatz wird generiert...', 'system');
+    await sleep(1500);
+    
+    const incidentHTML = `
+        <div class="incident-title">${currentIncident.icon} ${currentIncident.type}</div>
+        <div class="incident-details">
+            <strong>Einsatzort:</strong> ${callerInfo.location}<br>
+            <strong>Melder:</strong> ${callerInfo.name}<br>
+            <strong>Lagemeldung:</strong> ${currentIncident.details}<br>
+            <strong>Alarmierte Einheiten:</strong> ${currentIncident.units}<br>
+            <strong>Einstufung:</strong> <span style="color: #f85149;">${currentIncident.priority}</span>
+        </div>
+    `;
+    
+    const incidentEntry = document.createElement('div');
+    incidentEntry.className = 'log-entry incident';
+    incidentEntry.innerHTML = incidentHTML;
+    consoleLog.appendChild(incidentEntry);
+    scrollToBottom();
+    
+    await sleep(1000);
+    addLogEntry('🚨 EINSATZKRÄFTE SOFORT ALARMIEREN!', 'alert');
+    
+    startTimer(30);
+}
+
+function startTimer(seconds) {
+    const timerDiv = document.createElement('div');
+    timerDiv.className = 'timer-display';
+    timerDiv.innerHTML = `
+        <div class="timer-label">⏱️ REAKTIONSZEIT</div>
+        <div class="timer-value" id="timerValue">${seconds}</div>
+    `;
+    consoleLog.appendChild(timerDiv);
+    scrollToBottom();
+    
+    const timerValue = document.getElementById('timerValue');
+    let remaining = seconds;
+    
+    timerInterval = setInterval(() => {
+        remaining--;
+        timerValue.textContent = remaining;
+        
+        if (remaining <= 10) {
+            timerValue.classList.add('critical');
+        }
+        
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            timerValue.textContent = '0';
+            addLogEntry('⏱️ ZEIT ABGELAUFEN - Einheiten sollten alarmiert sein!', 'alert');
+            statusDot.classList.remove('active');
+            statusText.textContent = 'Simulation beendet';
             startBtn.disabled = false;
+            startBtn.textContent = 'Neuer Anruf';
         }
+    }, 1000);
+}
+
+function resetSimulation() {
+    if (timerInterval) clearInterval(timerInterval);
+    questionCount = 0;
+    callerInfo = {};
+    currentIncident = null;
+    consoleLog.innerHTML = '';
+    welcomeScreen.style.display = 'block';
+    consoleLog.appendChild(welcomeScreen);
+    userInput.value = '';
+    userInput.disabled = true;
+    userInput.placeholder = 'Ihre Frage oder Anweisung...';
+    statusDot.classList.remove('active');
+    statusText.textContent = 'System bereit';
+    startBtn.textContent = 'Anruf starten';
+}
+
+// Event Listeners
+startBtn.addEventListener('click', () => {
+    if (startBtn.textContent === 'Neuer Anruf') {
+        resetSimulation();
     }
+    startSimulation();
+});
 
-    function startEinsatz() {
-        const zufall = einsaetze[Math.floor(Math.random() * einsaetze.length)];
-        einsatzInfoEl.innerHTML =
-            "<strong>Einsatz:</strong> " + zufall.titel + "<br>" +
-            "<strong>Maßnahmen:</strong> " + zufall.details;
-
-        startTimer(30);
+userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !userInput.disabled) {
+        handleUserInput();
     }
-
-    function startTimer(sekunden) {
-        let rest = sekunden;
-        clearInterval(timerInterval);
-
-        timerInterval = setInterval(() => {
-            timerEl.textContent = "Einsatzbearbeitung: " + rest + " Sekunden";
-
-            if (rest <= 0) {
-                clearInterval(timerInterval);
-                timerEl.textContent = "ZEIT ABGELAUFEN!";
-                printZeile("SYSTEM: Zeit für diesen Einsatz ist abgelaufen.");
-            }
-
-            rest--;
-        }, 1000);
-    }
-
-    eingabeEl.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-            verarbeiteAntwort();
-        }
-    });
-</script>
-
-</body>
-</html>
+});
