@@ -17,6 +17,36 @@
     --success: #22c55e;
     --error: #ef4444;
     --radius: 16px;
+
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: #4CAF50;
+    --secondary-color: #f0f0f0;
+}
+
+body.dark-mode {
+    --bg-color: #1e1e1e;
+    --text-color: #f0f0f0;
+    --primary-color: #81C784;
+    --secondary-color: #2c2c2c;
+}
+
+/* Anwenden */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+button, select, textarea {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+}
+
+footer a {
+    color: var(--primary-color);
+}
+
 }
 
 body {
