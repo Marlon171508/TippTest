@@ -17,13 +17,27 @@
     <div class="subtitle">Teste deine Schreibgeschwindigkeit & Genauigkeit</div>
 
     <div class="controls">
-        <select id="timeSelect">
-            <option value="30">30 Sekunden</option>
-            <option value="60" selected>60 Sekunden</option>
-            <option value="120">120 Sekunden</option>
-        </select>
+        <input type="number" id="timeInput" min="10" value="60" placeholder="Zeit in Sekunden">
         <button onclick="startTest()">Start</button>
     </div>
+
+    <div class="controls">
+        <select id="textSelect">
+            <option value="random">Zufälliger Text</option>
+            <option value="tech">Technologie</option>
+            <option value="science">Wissenschaft</option>
+            <option value="history">Geschichte</option>
+            <option value="nature">Natur</option>
+            <option value="gaming">Gaming</option>
+            <option value="school">Schule</option>
+            <option value="work">Arbeit</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="nonsense">Sinnlose Wörter</option>
+            <option value="custom">Eigener Text</option>
+        </select>
+    </div>
+
+    <textarea id="customText" placeholder="Hier eigenen Text einfügen (nur bei »Eigener Text«)" style="display:none; margin-bottom:20px;"></textarea>
 
     <div class="timer" id="timer">⏱ 60s</div>
 
