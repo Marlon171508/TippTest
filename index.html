@@ -2,10 +2,96 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Test</title>
+    <title>Leitstellen Stress Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 40px;
+        }
+
+        #einsatzBox {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px #000;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        #timer {
+            font-size: 32px;
+            margin-top: 10px;
+            color: #ff4444;
+        }
+    </style>
 </head>
 <body>
-    <h1>Leitstellen-Stresstest – Testseite</h1>
-    <p>Wenn du das im Browser siehst, hat es funktioniert.</p>
+
+    <h1>Leitstellen Stress Test</h1>
+
+    <div id="einsatzBox">
+        <h2 id="einsatzTitel">Klicke auf „Neuer Einsatz“</h2>
+        <p id="einsatzDetails"></p>
+        <div id="timer"></div>
+        <button onclick="neuerEinsatz()">Neuer Einsatz</button>
+    </div>
+
+    <script>
+        const einsaetze = [
+            { titel: "Bewusstlose Person", details: "Adresse: Hauptstraße 12 – RTW + NEF" },
+            { titel: "Verkehrsunfall", details: "2 Verletzte – B27 – Feuerwehr + RTW" },
+            { titel: "Wohnungsbrand", details: "Mehrere Anrufer – Feuerwehr + RTW + Polizei" },
+            { titel: "Herzinfarkt", details: "Mann, 58 – Brustschmerzen – RTW + NEF" },
+            { titel: "Sturz aus Höhe", details: "Baustelle – 1 Person bewusstlos – RTW + NEF" },
+            { titel: "Schlägerei", details: "2 Verletzte – Polizei + RTW" }
+        ];
+
+        let timerInterval;
+
+        function neuerEinsatz() {
+            clearInterval(timerInterval);
+
+            const zufall = einsaetze[Math.floor(Math.random() * einsaetze.length)];
+
+            document.getElementById("einsatzTitel").textContent = zufall.titel;
+            document.getElementById("einsatzDetails").textContent = zufall.details;
+
+            startTimer(20);
+        }
+
+        function startTimer(sekunden) {
+            let rest = sekunden;
+
+            timerInterval = setInterval(() => {
+                document.getElementById("timer").textContent = rest + " Sekunden";
+
+                if (rest <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById("timer").textContent = "ZEIT ABGELAUFEN!";
+                }
+
+                rest--;
+            }, 1000);
+        }
+    </script>
+
 </body>
 </html>
