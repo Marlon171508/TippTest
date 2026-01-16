@@ -1,6 +1,6 @@
 "use strict";
 
-// 10 verschiedene Texte + sinnloser Text
+// Texte
 const TEXTS = {
     tech: "Technologie verändert unsere Welt grundlegend. Software, künstliche Intelligenz und Automatisierung beeinflussen unseren Alltag immer stärker. Programmieren ist heute eine der wichtigsten Fähigkeiten der modernen Gesellschaft.",
     science: "Die Wissenschaft versucht seit Jahrhunderten die Geheimnisse des Universums zu entschlüsseln. Physik, Chemie und Biologie arbeiten zusammen, um neue Erkenntnisse zu gewinnen, die unser Leben verbessern und die Welt besser verstehen lassen.",
@@ -17,12 +17,12 @@ const TEXTS = {
     }
 };
 
-// DOM-Elemente
+// DOM
 const textEl = document.getElementById("text");
 const inputEl = document.getElementById("input");
 const timerEl = document.getElementById("timer");
 const resultsEl = document.getElementById("results");
-const timeInputEl = document.getElementById("timeInput");
+const timeSelectEl = document.getElementById("timeSelect");
 const textSelectEl = document.getElementById("textSelect");
 const customTextEl = document.getElementById("customText");
 
@@ -30,7 +30,7 @@ let timer = null;
 let timeLeft = 0;
 let running = false;
 
-// Event: Auswahl eigener Text anzeigen/ausblenden
+// Eigener Text anzeigen
 textSelectEl.addEventListener("change", () => {
     if (textSelectEl.value === "custom") {
         customTextEl.style.display = "block";
@@ -45,10 +45,10 @@ textSelectEl.addEventListener("change", () => {
 function startTest() {
     clearInterval(timer);
 
-    // Zeit einlesen
-    timeLeft = parseInt(timeInputEl.value, 10);
+    // Zeit
+    timeLeft = parseInt(timeSelectEl.value, 10);
     if (isNaN(timeLeft) || timeLeft < 10) {
-        alert("Bitte eine gültige Zeit (≥10 Sekunden) eingeben.");
+        alert("Bitte eine gültige Zeit (≥10 Sekunden) auswählen.");
         return;
     }
 
@@ -62,6 +62,7 @@ function startTest() {
             alert("Bitte eigenen Text eingeben.");
             return;
         }
+        customTextEl.style.display = "none"; // **Textfeld ausblenden**
     } else if (selected === "random") {
         text = TEXTS.random();
     } else if (TEXTS[selected]) {
@@ -71,7 +72,7 @@ function startTest() {
         return;
     }
 
-    // Timer & Eingabe vorbereiten
+    // Reset Eingabe
     running = true;
     inputEl.value = "";
     inputEl.disabled = false;
@@ -87,18 +88,23 @@ function startTest() {
         textEl.appendChild(span);
     });
 
-    // Timer starten
     timer = setInterval(updateTimer, 1000);
 }
 
-// Timer-Update
+// Timer
 function updateTimer() {
-    if (timeLeft <= 0) {
+    if (timeLeft <= 0 || allTyped()) {
         endTest();
         return;
     }
     timeLeft--;
     timerEl.textContent = `⏱ ${timeLeft}s`;
+}
+
+// Prüfen, ob alle Zeichen getippt
+function allTyped() {
+    const chars = textEl.querySelectorAll("span");
+    return [...chars].every(span => span.classList.contains("correct"));
 }
 
 // Eingabe prüfen
@@ -117,6 +123,11 @@ inputEl.addEventListener("input", () => {
             span.className = "incorrect";
         }
     });
+
+    // Direkt prüfen, ob alles getippt
+    if (allTyped()) {
+        endTest();
+    }
 });
 
 // Test beenden
@@ -129,7 +140,7 @@ function endTest() {
     const charCount = typed.length;
     const wordCount = typed ? typed.split(/\s+/).length : 0;
     const errorCount = textEl.querySelectorAll(".incorrect").length;
-    const wpm = Math.round((wordCount / timeInputEl.value) * 60);
+    const wpm = Math.round((wordCount / timeSelectEl.value) * 60);
     const accuracy = charCount ? Math.max(0, ((charCount - errorCount) / charCount) * 100) : 0;
 
     document.getElementById("wpm").textContent = wpm;
@@ -138,6 +149,20 @@ function endTest() {
     document.getElementById("accuracy").textContent = accuracy.toFixed(1) + "%";
 
     resultsEl.style.display = "grid";
+
+    // Wenn alle Zeichen korrekt getippt
+    const chars = textEl.querySelectorAll("span");
+    if ([...chars].every(span => span.classList.contains("correct"))) {
+        if (confirm("Glückwunsch! Noch eine Runde?")) {
+            // Zurück zur Themenauswahl
+            inputEl.value = "";
+            inputEl.disabled = true;
+            resultsEl.style.display = "none";
+            textEl.innerHTML = "";
+            textSelectEl.value = "random";
+            timeSelectEl.value = "60";
+        }
+    }
 }
 
 window.startTest = startTest;
