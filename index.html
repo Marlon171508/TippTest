@@ -2,96 +2,149 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Leitstellen Stress Test</title> 
+    <title>Leitstellen Stress Test</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #111;
-            color: #fff;
-            text-align: center;
-            padding: 40px;
+            background: #0d1117;
+            color: #e6edf3;
+            margin: 0;
+            padding: 20px;
         }
 
-        #einsatzBox {
-            background: #222;
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .box {
+            background: #161b22;
             padding: 20px;
             border-radius: 10px;
-            width: 400px;
-            margin: 0 auto;
+            width: 350px;
             box-shadow: 0 0 10px #000;
         }
 
+        .box h2 {
+            margin-top: 0;
+            color: #58a6ff;
+        }
+
         button {
-            margin-top: 20px;
-            padding: 12px 20px;
-            font-size: 18px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #238636;
             border: none;
             border-radius: 8px;
-            background: #28a745;
             color: white;
+            font-size: 16px;
             cursor: pointer;
         }
 
         button:hover {
-            background: #218838;
+            background: #2ea043;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: #e6edf3;
         }
 
         #timer {
-            font-size: 32px;
+            font-size: 28px;
+            text-align: center;
             margin-top: 10px;
-            color: #ff4444;
+            color: #ff5555;
         }
     </style>
 </head>
+
 <body>
 
-    <h1>Leitstellen Stress Test</h1>
+<h1>Leitstellen Stress Test – Version 2</h1>
 
-    <div id="einsatzBox">
-        <h2 id="einsatzTitel">Klicke auf „Neuer Einsatz“</h2>
+<div class="container">
+
+    <!-- Einsatzbox -->
+    <div class="box">
+        <h2>Einsatz</h2>
+        <p id="einsatzTitel">Noch kein Einsatz</p>
         <p id="einsatzDetails"></p>
+        <button onclick="neuerEinsatz()">Neuen Einsatz generieren</button>
         <div id="timer"></div>
-        <button onclick="neuerEinsatz()">Neuer Einsatz</button>
     </div>
 
-    <script>
-        const einsaetze = [
-            { titel: "Bewusstlose Person", details: "Adresse: Hauptstraße 12 – RTW + NEF" },
-            { titel: "Verkehrsunfall", details: "2 Verletzte – B27 – Feuerwehr + RTW" },
-            { titel: "Wohnungsbrand", details: "Mehrere Anrufer – Feuerwehr + RTW + Polizei" },
-            { titel: "Herzinfarkt", details: "Mann, 58 – Brustschmerzen – RTW + NEF" },
-            { titel: "Sturz aus Höhe", details: "Baustelle – 1 Person bewusstlos – RTW + NEF" },
-            { titel: "Schlägerei", details: "2 Verletzte – Polizei + RTW" }
-        ];
+    <!-- Eingabebox -->
+    <div class="box">
+        <h2>Notizen</h2>
+        <textarea id="notizen" rows="8" placeholder="Notizen eingeben..."></textarea>
 
-        let timerInterval;
+        <h2>Rückmeldung</h2>
+        <input id="rueckmeldung" placeholder="Rückmeldung eingeben...">
 
-        function neuerEinsatz() {
-            clearInterval(timerInterval);
+        <button onclick="speichern()">Speichern</button>
+    </div>
 
-            const zufall = einsaetze[Math.floor(Math.random() * einsaetze.length)];
+</div>
 
-            document.getElementById("einsatzTitel").textContent = zufall.titel;
-            document.getElementById("einsatzDetails").textContent = zufall.details;
+<script>
+    const einsaetze = [
+        { titel: "Bewusstlose Person", details: "Adresse: Hauptstraße 12 – RTW + NEF" },
+        { titel: "Verkehrsunfall", details: "2 Verletzte – B27 – Feuerwehr + RTW" },
+        { titel: "Wohnungsbrand", details: "Mehrere Anrufer – Feuerwehr + RTW + Polizei" },
+        { titel: "Herzinfarkt", details: "Mann, 58 – Brustschmerzen – RTW + NEF" },
+        { titel: "Sturz aus Höhe", details: "Baustelle – 1 Person bewusstlos – RTW + NEF" },
+        { titel: "Schlägerei", details: "2 Verletzte – Polizei + RTW" }
+    ];
 
-            startTimer(20);
-        }
+    let timerInterval;
 
-        function startTimer(sekunden) {
-            let rest = sekunden;
+    function neuerEinsatz() {
+        clearInterval(timerInterval);
 
-            timerInterval = setInterval(() => {
-                document.getElementById("timer").textContent = rest + " Sekunden";
+        const zufall = einsaetze[Math.floor(Math.random() * einsaetze.length)];
 
-                if (rest <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById("timer").textContent = "ZEIT ABGELAUFEN!";
-                }
+        document.getElementById("einsatzTitel").textContent = zufall.titel;
+        document.getElementById("einsatzDetails").textContent = zufall.details;
 
-                rest--;
-            }, 1000);
-        }
-    </script>
+        startTimer(30);
+    }
+
+    function startTimer(sekunden) {
+        let rest = sekunden;
+
+        timerInterval = setInterval(() => {
+            document.getElementById("timer").textContent = rest + " Sekunden";
+
+            if (rest <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById("timer").textContent = "ZEIT ABGELAUFEN!";
+            }
+
+            rest--;
+        }, 1000);
+    }
+
+    function speichern() {
+        const notiz = document.getElementById("notizen").value;
+        const rueck = document.getElementById("rueckmeldung").value;
+
+        alert("Gespeichert:\n\nNotizen:\n" + notiz + "\n\nRückmeldung:\n" + rueck);
+    }
+</script>
 
 </body>
 </html>
