@@ -16,11 +16,25 @@
     <h1>TippTest</h1>
     <div class="subtitle">Teste deine Schreibgeschwindigkeit & Genauigkeit</div>
 
+    <!-- Zeitauswahl -->
     <div class="controls">
-        <input type="number" id="timeInput" min="10" value="60" placeholder="Zeit in Sekunden">
+        <label for="timeSelect">Zeit (Sekunden): </label>
+        <select id="timeSelect">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60" selected>60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+        </select>
         <button onclick="startTest()">Start</button>
     </div>
 
+    <!-- Themenauswahl -->
     <div class="controls">
         <select id="textSelect">
             <option value="random">Zufälliger Text</option>
@@ -37,14 +51,18 @@
         </select>
     </div>
 
-    <textarea id="customText" placeholder="Hier eigenen Text einfügen (nur bei »Eigener Text«)" style="display:none; margin-bottom:20px;"></textarea>
+    <!-- Eigener Text -->
+    <textarea id="customText" placeholder="Hier eigenen Text einfügen" style="display:none; margin-bottom:20px;"></textarea>
 
+    <!-- Timer -->
     <div class="timer" id="timer">⏱ 60s</div>
 
+    <!-- Textfeld zum Tippen -->
     <div class="text-box" id="text"></div>
 
     <textarea id="input" placeholder="Hier tippen..." disabled></textarea>
 
+    <!-- Ergebnisse -->
     <div class="results" id="results">
         <div class="result">
             <strong>WPM</strong>
