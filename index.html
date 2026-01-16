@@ -1,96 +1,84 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>TippTest – Schreibgeschwindigkeit testen</title>
-    <meta name="description" content="Professioneller TippTest zur Messung von Schreibgeschwindigkeit und Genauigkeit.">
-    <meta name="author" content="DEIN NAME">
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TippTest – Schreibgeschwindigkeit testen</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="app">
-    <h1>TippTest</h1>
-    <div class="subtitle">Teste deine Schreibgeschwindigkeit & Genauigkeit</div>
+<h1>TippTest</h1>
+<div class="subtitle">Teste deine Schreibgeschwindigkeit & Genauigkeit</div>
 
-    <!-- Zeitauswahl -->
-    <div class="controls">
-        <label for="timeSelect">Zeit (Sekunden): </label>
-        <select id="timeSelect">
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="50">50</option>
-            <option value="60" selected>60</option>
-            <option value="70">70</option>
-            <option value="80">80</option>
-            <option value="90">90</option>
-            <option value="100">100</option>
-        </select>
-        <button onclick="startTest()">Start</button>
-    </div>
-
-    <!-- Themenauswahl -->
-    <div class="controls">
-        <select id="textSelect">
-            <option value="random">Zufälliger Text</option>
-            <option value="tech">Technologie</option>
-            <option value="science">Wissenschaft</option>
-            <option value="history">Geschichte</option>
-            <option value="nature">Natur</option>
-            <option value="gaming">Gaming</option>
-            <option value="school">Schule</option>
-            <option value="work">Arbeit</option>
-            <option value="fantasy">Fantasy</option>
-            <option value="nonsense">Sinnlose Wörter</option>
-            <option value="custom">Eigener Text</option>
-        </select>
-    </div>
-
-    <!-- Eigener Text -->
-    <textarea id="customText" placeholder="Hier eigenen Text einfügen" style="display:none; margin-bottom:20px;"></textarea>
-
-    <!-- Timer -->
-    <div class="timer" id="timer">⏱ 60s</div>
-
-    <!-- Textfeld -->
-    <div class="text-box" id="text"></div>
-
-    <!-- Eingabefeld -->
-    <textarea id="input" placeholder="Hier tippen..." disabled></textarea>
-
-    <!-- Ergebnisse -->
-    <div class="results" id="results">
-        <div class="result">
-            <strong>WPM</strong>
-            <div id="wpm">0</div>
-        </div>
-        <div class="result">
-            <strong>Zeichen</strong>
-            <div id="chars">0</div>
-        </div>
-        <div class="result">
-            <strong>Fehler</strong>
-            <div id="errors">0</div>
-        </div>
-        <div class="result">
-            <strong>Genauigkeit</strong>
-            <div id="accuracy">0%</div>
-        </div>
-    </div>
-
-    <footer>
-        <a href="impressum.html">Impressum</a> |
-        <a href="datenschutz.html">Datenschutz</a>
-        <br>
-        © 2026 DEIN NAME
-    </footer>
+<div class="controls">
+    <label for="timeSelect">Zeit (Sekunden): </label>
+    <select id="timeSelect">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+        <option value="60" selected>60</option>
+        <option value="70">70</option>
+        <option value="80">80</option>
+        <option value="90">90</option>
+        <option value="100">100</option>
+    </select>
+    <button onclick="startTest()">Start</button>
 </div>
 
+<div class="controls">
+    <select id="textSelect">
+        <option value="random">Zufälliger Text</option>
+        <option value="tech">Technologie</option>
+        <option value="science">Wissenschaft</option>
+        <option value="history">Geschichte</option>
+        <option value="nature">Natur</option>
+        <option value="gaming">Gaming</option>
+        <option value="school">Schule</option>
+        <option value="work">Arbeit</option>
+        <option value="fantasy">Fantasy</option>
+        <option value="nonsense">Sinnlose Wörter</option>
+        <option value="custom">Eigener Text</option>
+    </select>
+</div>
+
+<textarea id="customText" placeholder="Hier eigenen Text einfügen" style="display:none; margin-bottom:20px;"></textarea>
+
+<div class="timer" id="timer">⏱ 60s</div>
+
+<div class="text-box" id="text"></div>
+
+<textarea id="input" placeholder="Hier tippen..." disabled></textarea>
+
+<div class="results" id="results">
+    <div class="result">
+        <strong>WPM</strong>
+        <div id="wpm">0</div>
+    </div>
+    <div class="result">
+        <strong>Zeichen</strong>
+        <div id="chars">0</div>
+    </div>
+    <div class="result">
+        <strong>Fehler</strong>
+        <div id="errors">0</div>
+    </div>
+    <div class="result">
+        <strong>Genauigkeit</strong>
+        <div id="accuracy">0%</div>
+    </div>
+</div>
+
+<footer>
+<a href="impressum.html">Impressum</a> |
+<a href="datenschutz.html">Datenschutz</a>
+<br>© 2026 DEIN NAME
+</footer>
+
 <script src="script.js"></script>
+</div>
 </body>
 </html>
