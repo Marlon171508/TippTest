@@ -2,11 +2,10 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Leitstellen Stress Test – Notruf Version</title>
-
+    <title>Leitstellen Stress Test – Thonny Stil</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Consolas, monospace;
             background: #0d1117;
             color: #e6edf3;
             margin: 0;
@@ -15,36 +14,53 @@
 
         h1 {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
-        .box {
+        .console-box {
             background: #161b22;
-            padding: 20px;
             border-radius: 10px;
-            width: 450px;
+            padding: 20px;
+            max-width: 800px;
             margin: 0 auto;
             box-shadow: 0 0 10px #000;
         }
 
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
+        #dialog {
+            background: #0d1117;
             border-radius: 8px;
-            border: none;
-            font-size: 16px;
+            padding: 10px;
+            height: 260px;
+            overflow-y: auto;
+            border: 1px solid #30363d;
+            white-space: pre-wrap;
+            font-size: 14px;
         }
 
-        input {
-            background: #0d1117;
+        #eingabe {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
             border: 1px solid #30363d;
+            background: #0d1117;
             color: #e6edf3;
+            font-family: Consolas, monospace;
+        }
+
+        #eingabe:disabled {
+            opacity: 0.5;
         }
 
         button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
             background: #238636;
             color: white;
+            font-size: 15px;
             cursor: pointer;
         }
 
@@ -52,95 +68,134 @@
             background: #2ea043;
         }
 
+        #einsatzInfo {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #111827;
+            border: 1px solid #30363d;
+            font-size: 14px;
+        }
+
         #timer {
-            font-size: 28px;
-            text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
+            font-size: 18px;
             color: #ff5555;
+            text-align: right;
         }
     </style>
 </head>
-
 <body>
 
-<h1>Leitstellen Stress Test – Notruf Dialog</h1>
+<h1>Leitstellen Stress Test – Thonny Stil</h1>
 
-<div class="box">
-    <h2 id="frage">Drücken Sie auf „Notruf starten“</h2>
+<div class="console-box">
+    <div id="dialog"></div>
 
-    <input id="eingabe" placeholder="Antwort eingeben..." disabled>
+    <input id="eingabe" placeholder="Antwort eingeben und Enter drücken..." disabled>
+    <button id="startBtn" onclick="startNotruf()">Notruf starten</button>
 
-    <button onclick="startNotruf()">Notruf starten</button>
-    <button onclick="antwortSenden()">Antwort senden</button>
-
-    <h3 id="einsatzTitel"></h3>
-    <p id="einsatzDetails"></p>
-
+    <div id="einsatzInfo"></div>
     <div id="timer"></div>
 </div>
 
 <script>
     const fragen = [
-        "Notruf, wo genau ist der Notfallort?",
+        "Notruf Feuerwehr und Rettungsdienst, wo genau ist der Notfallort?",
         "Was ist passiert?",
         "Wie viele Verletzte gibt es?",
         "Ist die Person ansprechbar?",
-        "Bleiben Sie bitte dran – Hilfe ist unterwegs."
+        "Bleiben Sie bitte bei der Person, Hilfe ist unterwegs."
     ];
 
     const einsaetze = [
-        { titel: "Bewusstlose Person", details: "RTW + NEF" },
-        { titel: "Verkehrsunfall", details: "2 Verletzte – Feuerwehr + RTW" },
-        { titel: "Wohnungsbrand", details: "Feuerwehr + RTW + Polizei" },
-        { titel: "Herzinfarkt", details: "RTW + NEF" }
+        { titel: "Bewusstlose Person", details: "RTW + NEF – Reanimation möglich" },
+        { titel: "Verkehrsunfall", details: "2 Verletzte – B27 – Feuerwehr + 2x RTW + NEF" },
+        { titel: "Wohnungsbrand", details: "Mehrere Anrufer – Feuerwehr + RTW + Polizei" },
+        { titel: "Herzinfarkt", details: "Brustschmerzen – RTW + NEF – EKG vorbereiten" }
     ];
 
     let frageIndex = 0;
+    let dialogText = "";
     let timerInterval;
 
-    function startNotruf() {
-        frageIndex = 0;
-        document.getElementById("frage").textContent = fragen[frageIndex];
-        document.getElementById("eingabe").disabled = false;
-        document.getElementById("eingabe").value = "";
-        document.getElementById("einsatzTitel").textContent = "";
-        document.getElementById("einsatzDetails").textContent = "";
-        document.getElementById("timer").textContent = "";
+    const dialogEl = document.getElementById("dialog");
+    const eingabeEl = document.getElementById("eingabe");
+    const einsatzInfoEl = document.getElementById("einsatzInfo");
+    const timerEl = document.getElementById("timer");
+    const startBtn = document.getElementById("startBtn");
+
+    function printZeile(text) {
+        dialogText += text + "\n";
+        dialogEl.textContent = dialogText;
+        dialogEl.scrollTop = dialogEl.scrollHeight;
     }
 
-    function antwortSenden() {
-        if (frageIndex < fragen.length - 1) {
-            frageIndex++;
-            document.getElementById("frage").textContent = fragen[frageIndex];
-            document.getElementById("eingabe").value = "";
+    function startNotruf() {
+        dialogText = "";
+        frageIndex = 0;
+        einsatzInfoEl.textContent = "";
+        timerEl.textContent = "";
+        clearInterval(timerInterval);
+
+        printZeile(">>> Neuer Notruf eingegangen");
+        printZeile("DISP: " + fragen[frageIndex]);
+        eingabeEl.disabled = false;
+        eingabeEl.value = "";
+        eingabeEl.focus();
+        startBtn.disabled = true;
+    }
+
+    function verarbeiteAntwort() {
+        const antwort = eingabeEl.value.trim();
+        if (antwort === "") return;
+
+        printZeile("ANRUF: " + antwort);
+        eingabeEl.value = "";
+
+        frageIndex++;
+
+        if (frageIndex < fragen.length) {
+            printZeile("DISP: " + fragen[frageIndex]);
         } else {
+            eingabeEl.disabled = true;
+            printZeile("DISP: Danke, wir schicken sofort Hilfe.");
             startEinsatz();
+            startBtn.disabled = false;
         }
     }
 
     function startEinsatz() {
         const zufall = einsaetze[Math.floor(Math.random() * einsaetze.length)];
-
-        document.getElementById("einsatzTitel").textContent = zufall.titel;
-        document.getElementById("einsatzDetails").textContent = zufall.details;
+        einsatzInfoEl.innerHTML =
+            "<strong>Einsatz:</strong> " + zufall.titel + "<br>" +
+            "<strong>Maßnahmen:</strong> " + zufall.details;
 
         startTimer(30);
     }
 
     function startTimer(sekunden) {
         let rest = sekunden;
+        clearInterval(timerInterval);
 
         timerInterval = setInterval(() => {
-            document.getElementById("timer").textContent = rest + " Sekunden";
+            timerEl.textContent = "Einsatzbearbeitung: " + rest + " Sekunden";
 
             if (rest <= 0) {
                 clearInterval(timerInterval);
-                document.getElementById("timer").textContent = "ZEIT ABGELAUFEN!";
+                timerEl.textContent = "ZEIT ABGELAUFEN!";
+                printZeile("SYSTEM: Zeit für diesen Einsatz ist abgelaufen.");
             }
 
             rest--;
         }, 1000);
     }
+
+    eingabeEl.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            verarbeiteAntwort();
+        }
+    });
 </script>
 
 </body>
